@@ -29,7 +29,7 @@ protected:
     bool BindGeometry(const geometry::Geometry &geometry,
                       const std::vector<std::vector<int>> &labels,
                       const RenderOption &option,
-                      const ViewControl &view) final;
+                      const ViewControl &view);
 
 protected:
     virtual bool PrepareBinding(const geometry::Geometry &geometry,

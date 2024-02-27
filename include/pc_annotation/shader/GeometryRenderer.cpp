@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: MIT
 // ----------------------------------------------------------------------------
 
-#include "open3d/visualization/shader/GeometryRenderer.h"
+#include "pc_annotation/shader/GeometryRenderer.h"
 
 #include "open3d/geometry/Image.h"
 #include "open3d/geometry/LineSet.h"
@@ -15,7 +15,6 @@
 #include "open3d/visualization/utility/SelectionPolygon.h"
 #include "open3d/visualization/visualizer/RenderOptionWithEditing.h"
 #include "open3d/utility/Logging.h"
-#include "GeometryRenderer.h"
 
 namespace open3d {
 namespace visualization {

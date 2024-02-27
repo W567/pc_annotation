@@ -9,6 +9,8 @@
 
 #include "open3d/visualization/shader/GeometryRenderer.h"
 
+#include "pc_annotation/shader/PhongShader.h"
+
 namespace open3d {
 namespace visualization {
 
@@ -33,7 +35,7 @@ public:
     bool Render(const RenderOption &option, const ViewControl &view) override;
 
 protected:
-    PhongShaderForPointCloud phong_point_shader_;  // TODO should be changed to forAnnotation
+    PhongShaderForAnnotationForPointCloud phong_point_shader_;
 };
 
 }  // namespace glsl

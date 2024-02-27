@@ -94,7 +94,7 @@ bool VisualizerWithAnnotation::AddGeometry(
     switch (geometry_ptr_->GetGeometryType()) {
         case geometry::Geometry::GeometryType::PointCloud:
             geometry_renderer_ptr_ =
-                    std::make_shared<glsl::PointCloudRenderer>();
+                    std::make_shared<glsl::PointCloudRendererForAnnotation>();
             break;
         case geometry::Geometry::GeometryType::LineSet:
             geometry_renderer_ptr_ = std::make_shared<glsl::LineSetRenderer>();

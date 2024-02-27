@@ -17,6 +17,7 @@
 
 #include "pc_annotation/VisualizerForAnnotation.h"
 #include "pc_annotation/RenderOptionForAnnotation.h"
+#include "pc_annotation/shader/GeometryRenderer.h"
 
 namespace open3d {
 
@@ -107,7 +108,7 @@ protected:
             pointcloud_picker_renderer_ptr_;
 
     std::shared_ptr<const geometry::Geometry> geometry_ptr_;
-    std::shared_ptr<glsl::GeometryRenderer> geometry_renderer_ptr_;
+    std::shared_ptr<glsl::GeometryRendererForAnnotation> geometry_renderer_ptr_;
 
     RenderOptionForAnnotation pick_point_opts_;
 
