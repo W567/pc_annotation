@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>pc_annotation</name>
+  <version>0.0.1</version>
+  <description>The pc_annotation package</description>
+
+  <maintainer email="wu@jsk.imi.i.u-tokyo.ac.jp">wu</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
