@@ -23,11 +23,11 @@ protected:
 public:
     VisualizerForAnnotation() {}
 
+    RenderOptionForAnnotation &GetRenderOption() { return *render_option_ptr_; }
+
     bool AddGeometry(
         std::shared_ptr<const geometry::Geometry> geometry_ptr,
         bool reset_bounding_box = true);
-
-    RenderOptionForAnnotation &GetRenderOption() { return *render_option_ptr_; }
 
 protected:
     // rendering properties
