@@ -14,7 +14,7 @@
 
 #include "pc_annotation/VisualizerForAnnotation.h"
 #include "pc_annotation/RenderOptionForAnnotation.h"
-#include "pc_annotation/shader/GeometryRenderer.h"
+#include "pc_annotation/shader/PointCloudRendererForAnnotation.h"
 
 namespace open3d {
 

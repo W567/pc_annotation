@@ -25,7 +25,7 @@ pybind11_add_module(pc_annotation
   src/DrawGeometry.cpp
   src/VisualizerForAnnotation.cpp
   src/VisualizerWithAnnotation.cpp
-  src/shader/GeometryRenderer.cpp
+  src/shader/PointCloudRendererForAnnotation.cpp
   src/shader/PhongShader.cpp
   src/shader/ShaderWrapperForAnnotation.cpp)
 
