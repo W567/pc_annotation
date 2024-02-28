@@ -634,6 +634,42 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 break;
             }
 
+
+            case GLFW_KEY_0:
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Default;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to DEFAULT.");
+                break;
+
+            case GLFW_KEY_1:
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Color;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to COLOR.");
+                break;
+
+            case GLFW_KEY_2:
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::XCoordinate;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to X.");
+                break;
+
+            case GLFW_KEY_3:
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::YCoordinate;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to Y.");
+                break;
+
+            case GLFW_KEY_4:
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::ZCoordinate;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to Z.");
+                break;
+
             case GLFW_KEY_5:
                 utility::LogInfo("Press 5");
                 render_option_ptr_->point_color_option_ =
