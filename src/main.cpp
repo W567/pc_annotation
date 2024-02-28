@@ -24,43 +24,36 @@
 // IN THE SOFTWARE.
 // ----------------------------------------------------------------------------
 
-#include "open3d/Open3D.h"
-#include "pc_annotation/DrawGeometry.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
 #include <pybind11/stl.h>
 
-#include <memory>
-
+#include "open3d/Open3D.h"
 #include "open3d/geometry/PointCloud.h"
 
-#include "open3d/utility/Logging.h"
-
-namespace py = pybind11;
+#include "pc_annotation/DrawGeometry.h"
 
 using RowMatrixXd = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 
-std::vector<Eigen::Vector3d> MatrixToVector3d(const Eigen::MatrixXd& mat)
-{
+std::vector<Eigen::Vector3d> MatrixToVector3d(const Eigen::MatrixXd& mat) {
     std::vector<Eigen::Vector3d> vec(mat.rows());
-    for (int i = 0; i < mat.rows(); ++i)
-    {
+    for (int i = 0; i < mat.rows(); ++i) {
         vec[i] = mat.row(i);
     }
     return vec;
 }
 
-
-bool annotate(const RowMatrixXd& xyz, const RowMatrixXd& normals, const RowMatrixXd colors
-        // const std::string &filename,
-        // const std::string &window_name = "Open3D",
-        // int width = 640,
-        // int height = 480,
-        // int left = 50,
-        // int top = 50
+bool annotate(
+        const RowMatrixXd& xyz,
+        const RowMatrixXd& normals,
+        const RowMatrixXd colors,
+        const std::string &filename,
+        const std::string &window_name = "Open3D",
+        int width = 640,
+        int height = 480,
+        int left = 50,
+        int top = 50
         ) {
-
-    // Create a C++ PointCloud and fill it with data from the Python object
     open3d::geometry::PointCloud cpp_pointcloud;
     cpp_pointcloud.points_ = MatrixToVector3d(xyz);
     cpp_pointcloud.normals_ = MatrixToVector3d(normals);
@@ -70,12 +63,22 @@ bool annotate(const RowMatrixXd& xyz, const RowMatrixXd& normals, const RowMatri
     geometry_ptrs.push_back(std::make_shared<const open3d::geometry::PointCloud>(cpp_pointcloud));
 
     open3d::visualization::DrawGeometriesWithAnnotation(
-        geometry_ptrs, "filename", "window_name", 640, 480, 50, 50);
+        geometry_ptrs, filename, window_name, width, height, left, top);
     return true;
 }
 
 PYBIND11_MODULE(pc_annotation, m) {
     m.def("annotate",
-          &annotate, "hoge",
+          &annotate,
+          "Point cloud annotation tool",
+          pybind11::arg("xyz"),
+          pybind11::arg("normals"),
+          pybind11::arg("colors"),
+          pybind11::arg("filename"),
+          pybind11::arg("window_name") = "Open3D",
+          pybind11::arg("width") = 640,
+          pybind11::arg("height") = 480,
+          pybind11::arg("left") = 50,
+          pybind11::arg("top") = 50,
           pybind11::return_value_policy::reference_internal);
 }
