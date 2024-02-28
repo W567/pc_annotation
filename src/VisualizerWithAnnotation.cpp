@@ -634,13 +634,17 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 break;
             }
 
+            case GLFW_KEY_5:
+                utility::LogInfo("Press 5");
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Label;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to LABEL");
+                break;
+
             case GLFW_KEY_S: {
-                if (mods & GLFW_MOD_CONTROL) {
-                    SaveTag();
-                } else {
-                    Visualizer::KeyPressCallback(window, key, scancode, action,
-                                                 mods);
-                }
+                utility::LogInfo("Press S, mods: #{:d}", mods);
+                SaveTag();
                 break;
             }
 
