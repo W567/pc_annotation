@@ -4,6 +4,8 @@
 // Copyright (c) 2018-2023 www.open3d.org
 // SPDX-License-Identifier: MIT
 // ----------------------------------------------------------------------------
+// Reference:
+// github.com/isl-org/Open3D/blob/main/cpp/open3d/visualization/visualizer/VisualizerWithVertexSelection.h
 
 #pragma once
 
@@ -13,8 +15,6 @@
 #include "pc_annotation/VisualizerForAnnotation.h"
 #include "pc_annotation/RenderOptionForAnnotation.h"
 #include "pc_annotation/shader/GeometryRenderer.h"
-
-#include "open3d/utility/Logging.h"
 
 namespace open3d {
 
@@ -31,7 +31,7 @@ public:
     enum class SelectionMode { None = 0, Point = 1, Rectangle = 2, Moving = 3 };
 
 public:
-    VisualizerWithAnnotation() {tag = 0;}
+    VisualizerWithAnnotation() {}
     ~VisualizerWithAnnotation() override {}
     VisualizerWithAnnotation(const VisualizerWithAnnotation &) =
             delete;
@@ -89,8 +89,7 @@ protected:
     const std::vector<Eigen::Vector3d> *GetGeometryPoints(
             std::shared_ptr<const geometry::Geometry> geometry);
 
-
-
+protected: // new methods listed below
     void SaveTag();
     bool ReadTag();
 
@@ -108,7 +107,7 @@ protected:
             pointcloud_picker_renderer_ptr_;
 
     std::shared_ptr<const geometry::Geometry> geometry_ptr_;
-    std::shared_ptr<glsl::PointCloudRendererForAnnotation> geometry_renderer_ptr_;
+    std::shared_ptr<glsl::PointCloudRendererForAnnotation> geometry_renderer_ptr_;  // changed
 
     RenderOptionForAnnotation pick_point_opts_;
 
@@ -123,10 +122,12 @@ protected:
     std::function<void()> on_selection_changed_;
     std::function<void()> on_selection_moving_;
     std::function<void()> on_selection_moved_;
-    std::vector<std::vector<int>> labels;
-    int tag;
+
+protected: // new attributes listed below
+    int tag = 0;
     int length;
     std::string filename;
+    std::vector<std::vector<int>> labels;
 };
 
 }  // namespace visualization

@@ -25,6 +25,7 @@
 #include "open3d/visualization/utility/SelectionPolygonVolume.h"
 #include "open3d/visualization/visualizer/RenderOptionWithEditing.h"
 #include "open3d/visualization/visualizer/ViewControlWithEditing.h"
+#include "open3d/utility/Logging.h"
 
 #include <fstream>
 #include  <experimental/filesystem>
