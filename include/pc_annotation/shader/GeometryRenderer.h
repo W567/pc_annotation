@@ -14,7 +14,6 @@
 
 namespace open3d {
 namespace visualization {
-
 namespace glsl {
 
 class PointCloudRendererForAnnotation : public PointCloudRenderer {
@@ -34,6 +33,5 @@ protected:
 };
 
 }  // namespace glsl
-
 }  // namespace visualization
 }  // namespace open3d
