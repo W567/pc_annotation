@@ -14,6 +14,8 @@
 
 #include "pc_annotation/RenderOptionForAnnotation.h"
 
+#include "open3d/utility/Logging.h"
+
 namespace open3d {
 namespace visualization {
 

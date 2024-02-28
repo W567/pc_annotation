@@ -11,6 +11,8 @@
 
 #include "open3d/visualization/visualizer/RenderOption.h"
 
+#include "open3d/utility/Logging.h"
+
 namespace open3d {
 namespace visualization {
 

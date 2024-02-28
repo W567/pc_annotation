@@ -19,6 +19,8 @@
 #include "pc_annotation/RenderOptionForAnnotation.h"
 #include "pc_annotation/shader/GeometryRenderer.h"
 
+#include "open3d/utility/Logging.h"
+
 namespace open3d {
 
 namespace geometry {

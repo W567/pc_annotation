@@ -17,6 +17,8 @@
 
 #include "pc_annotation/shader/ShaderWrapperForAnnotation.h"
 
+#include "open3d/utility/Logging.h"
+
 namespace open3d {
 namespace visualization {
 
