@@ -36,6 +36,8 @@ public:
 
     bool AddLabels(const std::vector<std::vector<int>>& labels);
 
+    bool UpdateGeometry() override;
+
 public:
     bool Render(const RenderOptionForAnnotation &option, const ViewControl &view);
 

@@ -148,6 +148,9 @@ bool VisualizerWithAnnotation::AddGeometry(
 
 bool VisualizerWithAnnotation::UpdateGeometry(
         std::shared_ptr<const geometry::Geometry> geometry_ptr /*= nullptr*/) {
+
+    utility::LogInfo("Enter update geometry.");
+
     if (geometry_ptr) {
         utility::LogDebug(
                 "VisualizerWithAnnotation::UpdateGeometry() does not "
@@ -175,34 +178,11 @@ bool VisualizerWithAnnotation::UpdateGeometry(
             ui_points_geometry_ptr_->normals_ = cloud->normals_;
             break;
         }
-        case geometry::Geometry::GeometryType::LineSet: {
-            auto lines = std::static_pointer_cast<const geometry::LineSet>(
-                    geometry_ptr_);
-            const std::vector<Eigen::Vector3d> *geometry_points =
-                    GetGeometryPoints(ui_points_geometry_ptr_);
-            if (geometry_points &&
-                lines->points_.size() != geometry_points->size()) {
-                ClearPickedPoints();
-            }
-            ui_points_geometry_ptr_->points_ = lines->points_;
-            break;
-        }
+        case geometry::Geometry::GeometryType::LineSet:
         case geometry::Geometry::GeometryType::MeshBase:
         case geometry::Geometry::GeometryType::TriangleMesh:
         case geometry::Geometry::GeometryType::HalfEdgeTriangleMesh:
-        case geometry::Geometry::GeometryType::TetraMesh: {
-            auto mesh = std::static_pointer_cast<const geometry::MeshBase>(
-                    geometry_ptr_);
-            const std::vector<Eigen::Vector3d> *geometry_points =
-                    GetGeometryPoints(ui_points_geometry_ptr_);
-            if (geometry_points &&
-                mesh->vertices_.size() != geometry_points->size()) {
-                ClearPickedPoints();
-            }
-            ui_points_geometry_ptr_->points_ = mesh->vertices_;
-            ui_points_geometry_ptr_->normals_ = mesh->vertex_normals_;
-            break;
-        }
+        case geometry::Geometry::GeometryType::TetraMesh:
         case geometry::Geometry::GeometryType::Image:
         case geometry::Geometry::GeometryType::RGBDImage:
         case geometry::Geometry::GeometryType::VoxelGrid:
@@ -676,6 +656,13 @@ void VisualizerWithAnnotation::KeyPressCallback(
                         RenderOptionForAnnotation::PointColorOption::Label;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to LABEL");
+                break;
+
+            case GLFW_KEY_9:
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Normal;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to NORMAL.");
                 break;
 
             case GLFW_KEY_S: {

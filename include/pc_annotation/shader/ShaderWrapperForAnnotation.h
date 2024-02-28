@@ -51,8 +51,6 @@ protected:
                               const ViewControl &view) = 0;
 
 protected:
-    bool compiled_ = false;
-    bool bound_ = false;
 
     void SetShaderName(const std::string &shader_name) {
         shader_name_ = shader_name;

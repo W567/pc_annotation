@@ -35,6 +35,14 @@ bool PointCloudRendererForAnnotation::AddLabels(const std::vector<std::vector<in
     return UpdateGeometry();
 }
 
+bool PointCloudRendererForAnnotation::UpdateGeometry() {
+    simple_point_shader_.InvalidateGeometry();
+    phong_point_shader_.InvalidateGeometry();
+    normal_point_shader_.InvalidateGeometry();
+    simpleblack_normal_shader_.InvalidateGeometry();
+    return true;
+}
+
 bool PointCloudRendererForAnnotation::Render(const RenderOptionForAnnotation &option,
                                              const ViewControl &view) {
     if (!is_visible_ || geometry_ptr_->IsEmpty()) return true;

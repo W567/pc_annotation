@@ -132,5 +132,45 @@ void VisualizerForAnnotation::Render(bool render_screen) {
 }
 
 
+bool VisualizerForAnnotation::AddGeometry(
+        std::shared_ptr<const geometry::Geometry> geometry_ptr,
+        bool reset_bounding_box) {
+    if (!is_initialized_) {
+        return false;
+    }
+    if (!geometry_ptr.get()) {
+        utility::LogWarning(
+                "[AddGeometry] Invalid pointer. Possibly a null pointer or "
+                "None was passed in.");
+        return false;
+    }
+
+    glfwMakeContextCurrent(window_);
+    std::shared_ptr<glsl::PointCloudRendererForAnnotation> renderer_ptr;
+    if (geometry_ptr->GetGeometryType() ==
+        geometry::Geometry::GeometryType::Unspecified) {
+        return false;
+    } else if (geometry_ptr->GetGeometryType() ==
+               geometry::Geometry::GeometryType::PointCloud) {
+        renderer_ptr = std::make_shared<glsl::PointCloudRendererForAnnotation>();
+        if (!renderer_ptr->AddGeometry(geometry_ptr)) {
+            return false;
+        }
+    } else {
+        return false;
+    }
+    geometry_renderer_ptrs_.insert(renderer_ptr);
+    geometry_ptrs_.insert(geometry_ptr);
+    if (reset_bounding_box) {
+        view_control_ptr_->FitInGeometry(*geometry_ptr);
+        ResetViewPoint();
+    }
+    utility::LogDebug(
+            "Add geometry and update bounding box to {}",
+            view_control_ptr_->GetBoundingBox().GetPrintInfo().c_str());
+    return UpdateGeometry(geometry_ptr);
+}
+
+
 }  // namespace visualization
 }  // namespace open3d
