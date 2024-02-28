@@ -10,6 +10,13 @@
 namespace open3d {
 namespace visualization {
 
+void VisualizerForAnnotation::WindowRefreshCallback(GLFWwindow *window) {
+    if (is_redraw_required_) {
+        Render();
+        is_redraw_required_ = false;
+    }
+}
+
 void VisualizerForAnnotation::KeyPressCallback(
         GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (action == GLFW_RELEASE) {

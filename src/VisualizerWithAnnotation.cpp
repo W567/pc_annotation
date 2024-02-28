@@ -977,5 +977,35 @@ void VisualizerWithAnnotation::SetPointSize(double size) {
     opt->SetPointSize(size);
 }
 
+
+bool VisualizerWithAnnotation::WaitEvents() {
+    utility::LogInfo("  -- Enter waitEvents --");
+    if (!is_initialized_) {
+        return false;
+    }
+    glfwMakeContextCurrent(window_);
+    if (is_redraw_required_) {
+        WindowRefreshCallback(window_);
+    }
+    animation_callback_func_in_loop_ = animation_callback_func_;
+    glfwWaitEvents();
+    return !glfwWindowShouldClose(window_);
+}
+
+bool VisualizerWithAnnotation::PollEvents() {
+    utility::LogInfo("  -- Enter PollEvents --");
+    if (!is_initialized_) {
+        return false;
+    }
+    glfwMakeContextCurrent(window_);
+    if (is_redraw_required_) {
+        WindowRefreshCallback(window_);
+    }
+    animation_callback_func_in_loop_ = animation_callback_func_;
+    glfwPollEvents();
+    return !glfwWindowShouldClose(window_);
+}
+
+
 }  // namespace visualization
 }  // namespace open3d

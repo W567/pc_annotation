@@ -19,13 +19,23 @@ namespace visualization {
 class VisualizerForAnnotation : public Visualizer {
 
 protected:
-    virtual void KeyPressCallback(
+    void KeyPressCallback(
             GLFWwindow *window, int key, int scancode, int action, int mods);
+    
+    void Render(bool render_screen = false);
 
 public:
     VisualizerForAnnotation() {}
-    virtual void BuildUtilities();
+    void BuildUtilities() override;
     RenderOptionForAnnotation &GetRenderOption() { return *render_option_ptr_; }
+
+    bool PollEvents();
+
+    bool WaitEvents();
+
+    void Run();
+
+    void WindowRefreshCallback(GLFWwindow *window);
 
 protected:
     // rendering properties

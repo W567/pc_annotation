@@ -70,6 +70,10 @@ public:
     void RegisterSelectionMovedCallback(std::function<void()> f);
     void SetFilename(std::string name);
 
+    bool PollEvents();
+
+    bool WaitEvents();
+
 protected:
     bool InitViewControl() override;
     bool InitRenderOption() override;
