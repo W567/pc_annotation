@@ -25,10 +25,11 @@
 #include "open3d/visualization/utility/SelectionPolygonVolume.h"
 #include "open3d/visualization/visualizer/RenderOptionWithEditing.h"
 #include "open3d/visualization/visualizer/ViewControlWithEditing.h"
-#include "open3d/utility/Logging.h"
 
+// [changed] Additional headers listed below
 #include <fstream>
 #include  <experimental/filesystem>
+#include "open3d/utility/Logging.h"
 
 namespace open3d {
 namespace visualization {
@@ -97,13 +98,13 @@ bool VisualizerWithAnnotation::AddGeometry(
             geometry_renderer_ptr_ =
                     std::make_shared<glsl::PointCloudRendererForAnnotation>();
             break;
+        // [changed] currently only PointCloud is supported
         case geometry::Geometry::GeometryType::LineSet:
-        case geometry::Geometry::GeometryType::TriangleMesh:  // fall-through
+        case geometry::Geometry::GeometryType::TriangleMesh:
         case geometry::Geometry::GeometryType::HalfEdgeTriangleMesh:
         case geometry::Geometry::GeometryType::TetraMesh:
         case geometry::Geometry::GeometryType::Image:
         case geometry::Geometry::GeometryType::MeshBase:
-            // MeshBase is too general, can't render. Fall-through.
         case geometry::Geometry::GeometryType::RGBDImage:
         case geometry::Geometry::GeometryType::VoxelGrid:
         case geometry::Geometry::GeometryType::Octree:
@@ -149,9 +150,6 @@ bool VisualizerWithAnnotation::AddGeometry(
 
 bool VisualizerWithAnnotation::UpdateGeometry(
         std::shared_ptr<const geometry::Geometry> geometry_ptr /*= nullptr*/) {
-
-    utility::LogInfo("Enter update geometry.");
-
     if (geometry_ptr) {
         utility::LogDebug(
                 "VisualizerWithAnnotation::UpdateGeometry() does not "
@@ -179,6 +177,7 @@ bool VisualizerWithAnnotation::UpdateGeometry(
             ui_points_geometry_ptr_->normals_ = cloud->normals_;
             break;
         }
+        // [changed] currently only PointCloud is supported
         case geometry::Geometry::GeometryType::LineSet:
         case geometry::Geometry::GeometryType::MeshBase:
         case geometry::Geometry::GeometryType::TriangleMesh:
@@ -219,11 +218,13 @@ void VisualizerWithAnnotation::PrintVisualizerHelp() {
     utility::LogInfo("    mouse right drag            : Moves selected points.");
     utility::LogInfo("    Delete / Backspace          : Removes all points in the rectangle from the");
     utility::LogInfo("                                  selection.");
+    utility::LogInfo("------------------ Keys for annotation ------------------");
     utility::LogInfo("    Space        :        Annotate with current tag.");
     utility::LogInfo("    Ctrl + N     :        Skip to next tag.");
     utility::LogInfo("    Ctrl + B     :        Back to previous tag.");
     utility::LogInfo("    Ctrl + S     :        Save labels.");
     utility::LogInfo("    Ctrl + F     :        Toggle coordinate visualization.");
+    utility::LogInfo("    5            :        Point color set to LABEL.");
     utility::LogInfo("    Q / Esc      :        Quit (auto labels saving).");
     utility::LogInfo("");
     // clang-format on
@@ -232,8 +233,9 @@ void VisualizerWithAnnotation::PrintVisualizerHelp() {
 void VisualizerWithAnnotation::UpdateWindowTitle() {
     if (window_ != NULL) {
         auto &view_control = (ViewControlWithEditing &)(*view_control_ptr_);
+        // [changed] add tag to window title
         auto title = window_name_ + " - " + view_control.GetStatusString() + 
-                     " - Current Tag:" + std::to_string(tag);
+                     " - Current Tag: " + std::to_string(tag);
         glfwSetWindowTitle(window_, title.c_str());
     }
 }
@@ -403,7 +405,7 @@ bool VisualizerWithAnnotation::InitViewControl() {
     return true;
 }
 
-// TODO: remove this function?
+// [changed] RenderOptionForAnnotation instead of RenderOption
 bool VisualizerWithAnnotation::InitRenderOption() {
     render_option_ptr_ = std::unique_ptr<RenderOptionForAnnotation>(
             new RenderOptionForAnnotation);
@@ -430,76 +432,6 @@ void VisualizerWithAnnotation::WindowResizeCallback(GLFWwindow *window,
                                                          int h) {
     InvalidateSelectionPolygon();
     Visualizer::WindowResizeCallback(window, w, h);
-}
-
-void VisualizerWithAnnotation::SetFilename(std::string name)
-{
-    filename = name;
-}
-
-bool VisualizerWithAnnotation::ReadTag()
-{
-    // std::fstream file;
-    // std::string tmp = filename;
-    // tmp.pop_back();
-    // tmp.pop_back();
-    // tmp.pop_back();
-    // std::string ext = "label";
-    // if (std::experimental::filesystem::exists(tmp + ext)) {
-    //     file.open(tmp + ext);
-    //     std::string line;
-    //     labels.clear();
-    //     std::vector<int> aff1;
-    //     std::vector<int> aff2;
-    //     std::vector<int> aff3;
-    //     while (std::getline(file, line))
-    //     {
-    //         aff1.push_back(atoi(&line.at(0)));
-    //         aff2.push_back(atoi(&line.at(2)));
-    //         aff3.push_back(atoi(&line.at(4)));
-    //         utility::LogInfo(line.c_str());
-    //         utility::LogInfo("tag1, 2, 3: #{:d} #{:d} #{:d}.", atoi(&line.at(0)),
-    //                                                            atoi(&line.at(2)),
-    //                                                            atoi(&line.at(4)));
-    //     }
-    //     labels.push_back(aff1);
-    //     labels.push_back(aff2);
-    //     labels.push_back(aff3);
-    //     return true;
-    // }
-    // else {
-    //     return false;
-    // }
-    return false;
-}
-
-void VisualizerWithAnnotation::SaveTag()
-{
-    std::ofstream file;
-    std::string tmp = filename;
-    
-    size_t pos_dot = tmp.find_last_of(".");
-    if (pos_dot != std::string::npos) {
-        tmp = tmp.substr(0, pos_dot);
-    }
-
-    std::string ext = ".label";
-    file.open(tmp + ext);
-
-    int size = labels.size();
-    for (int i = 0; i < length; i++) {
-        for (int j = 0; j < size; j++) {
-            file << std::to_string(labels[j][i]);
-            if (j < size - 1) {
-                file << " ";
-            } else {
-                file << "\n";
-            }
-        }
-    }
-
-    file.close();
-    utility::LogInfo("Tag saved.");
 }
 
 void VisualizerWithAnnotation::KeyPressCallback(
@@ -553,19 +485,40 @@ void VisualizerWithAnnotation::KeyPressCallback(
 
                     is_redraw_required_ = true;
                 } else {
+                    // [changed] Read tag
                     ReadTag();
                     // Visualizer::KeyPressCallback(window, key, scancode, action,
                     //                              mods);
                 }
                 break;
+            case GLFW_KEY_MINUS: {
+                if (action == GLFW_PRESS) {
+                    SetPointSize(pick_point_opts_.point_size_ - 1.0);
+                    is_redraw_required_ = true;
+                } else {
+                    Visualizer::KeyPressCallback(window, key, scancode, action,
+                                                 mods);
+                }
+                break;
+            }
+            case GLFW_KEY_EQUAL: {
+                if (action == GLFW_PRESS) {
+                    SetPointSize(pick_point_opts_.point_size_ + 1.0);
+                    is_redraw_required_ = true;
+                } else {
+                    Visualizer::KeyPressCallback(window, key, scancode, action,
+                                                 mods);
+                }
+                break;
+            }
+
+            // [changed] new keys for annotation listed below
             case GLFW_KEY_SPACE:
-                if (selected_points_.size() > 0)
-                {
+                if (selected_points_.size() > 0) {
                     auto points = GetGeometryPoints(geometry_ptr_);
                     length = points->size();
                     std::vector<int> tmp(length);
-                    for (auto &kv : selected_points_)
-                    {
+                    for (auto &kv : selected_points_) {
                         tmp[kv.first] = 1;
                     }
                     labels.push_back(tmp);
@@ -573,9 +526,7 @@ void VisualizerWithAnnotation::KeyPressCallback(
                         "Annotate #{:d} points with tag #{:d}. Current tag: #{:d}",
                         selected_points_.size(), tag, tag+1);
                     tag++;
-                }
-                else
-                {
+                } else {
                     utility::LogInfo("Please select points before annotation.");
                 }
                 break;
@@ -597,14 +548,11 @@ void VisualizerWithAnnotation::KeyPressCallback(
             
             case GLFW_KEY_B: {
                 if (mods & GLFW_MOD_CONTROL) {
-                    if (tag > 0)
-                    {
+                    if (tag > 0) {
                         tag--;
                         labels.pop_back();
                         utility::LogInfo("Back. Current tag: #{:d}.", tag);
-                    }
-                    else
-                    {
+                    } else {
                         utility::LogInfo("Empty. Current tag: #{:d}.", tag);
                     }
                 } else {
@@ -637,7 +585,6 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 Close();
                 break;
             }
-
 
             case GLFW_KEY_0:
                 render_option_ptr_->point_color_option_ =
@@ -688,26 +635,6 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to NORMAL.");
                 break;
 
-            case GLFW_KEY_MINUS: {
-                if (action == GLFW_PRESS) {
-                    SetPointSize(pick_point_opts_.point_size_ - 1.0);
-                    is_redraw_required_ = true;
-                } else {
-                    Visualizer::KeyPressCallback(window, key, scancode, action,
-                                                 mods);
-                }
-                break;
-            }
-            case GLFW_KEY_EQUAL: {
-                if (action == GLFW_PRESS) {
-                    SetPointSize(pick_point_opts_.point_size_ + 1.0);
-                    is_redraw_required_ = true;
-                } else {
-                    Visualizer::KeyPressCallback(window, key, scancode, action,
-                                                 mods);
-                }
-                break;
-            }
             default:
                 Visualizer::KeyPressCallback(window, key, scancode, action,
                                              mods);
@@ -889,12 +816,14 @@ void VisualizerWithAnnotation::AddPickedPoints(
 
     for (auto &index : indices) {
         const auto &point = (*points)[index];
+        // [changed] comment out
         // utility::LogInfo(
         //         "Adding point #{:d} ({:.2f}, {:.2f}, {:.2f}) to selection.",
         //         index, point.x(), point.y(), point.z());
         selected_points_[index] = point;
         ui_selected_points_geometry_ptr_->points_.push_back(point);
     }
+    // [changed] print out number of points
     utility::LogInfo("Adding #{:d} points to selection.", indices.size());
     ui_selected_points_geometry_ptr_->PaintUniformColor(SELECTED_POINTS_COLOR);
     ui_selected_points_renderer_ptr_->UpdateGeometry();
@@ -952,6 +881,7 @@ const std::vector<Eigen::Vector3d>
             points = &cloud->points_;
             break;
         }
+        //  【changed】 currently only PointCloud is supported
         case geometry::Geometry::GeometryType::LineSet:
         case geometry::Geometry::GeometryType::MeshBase:
         case geometry::Geometry::GeometryType::TriangleMesh:
@@ -991,6 +921,77 @@ void VisualizerWithAnnotation::SetPointSize(double size) {
     opt->SetPointSize(size);
     opt = &utility_renderer_opts_[ui_selected_points_renderer_ptr_];
     opt->SetPointSize(size);
+}
+
+// [changed] Implementation of new methods listed below
+void VisualizerWithAnnotation::SetFilename(std::string name)
+{
+    filename = name;
+}
+
+bool VisualizerWithAnnotation::ReadTag()
+{
+    // std::fstream file;
+    // std::string tmp = filename;
+    // tmp.pop_back();
+    // tmp.pop_back();
+    // tmp.pop_back();
+    // std::string ext = "label";
+    // if (std::experimental::filesystem::exists(tmp + ext)) {
+    //     file.open(tmp + ext);
+    //     std::string line;
+    //     labels.clear();
+    //     std::vector<int> aff1;
+    //     std::vector<int> aff2;
+    //     std::vector<int> aff3;
+    //     while (std::getline(file, line))
+    //     {
+    //         aff1.push_back(atoi(&line.at(0)));
+    //         aff2.push_back(atoi(&line.at(2)));
+    //         aff3.push_back(atoi(&line.at(4)));
+    //         utility::LogInfo(line.c_str());
+    //         utility::LogInfo("tag1, 2, 3: #{:d} #{:d} #{:d}.", atoi(&line.at(0)),
+    //                                                            atoi(&line.at(2)),
+    //                                                            atoi(&line.at(4)));
+    //     }
+    //     labels.push_back(aff1);
+    //     labels.push_back(aff2);
+    //     labels.push_back(aff3);
+    //     return true;
+    // }
+    // else {
+    //     return false;
+    // }
+    return false;
+}
+
+void VisualizerWithAnnotation::SaveTag()
+{
+    std::ofstream file;
+    std::string tmp = filename;
+    
+    size_t pos_dot = tmp.find_last_of(".");
+    if (pos_dot != std::string::npos) {
+        tmp = tmp.substr(0, pos_dot);
+    }
+
+    std::string ext = ".label";
+    file.open(tmp + ext);
+
+    int size = labels.size();
+    for (int i = 0; i < length; i++) {
+        for (int j = 0; j < size; j++) {
+            file << std::to_string(labels[j][i]);
+            if (j < size - 1) {
+                file << " ";
+            } else {
+                file << "\n";
+            }
+        }
+    }
+
+    file.close();
+    utility::LogInfo("Tag saved.");
 }
 
 }  // namespace visualization

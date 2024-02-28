@@ -89,7 +89,7 @@ protected:
     const std::vector<Eigen::Vector3d> *GetGeometryPoints(
             std::shared_ptr<const geometry::Geometry> geometry);
 
-protected: // new methods listed below
+protected: // [changed] new methods listed below
     void SaveTag();
     bool ReadTag();
 
@@ -107,7 +107,7 @@ protected:
             pointcloud_picker_renderer_ptr_;
 
     std::shared_ptr<const geometry::Geometry> geometry_ptr_;
-    std::shared_ptr<glsl::PointCloudRendererForAnnotation> geometry_renderer_ptr_;  // changed
+    std::shared_ptr<glsl::PointCloudRendererForAnnotation> geometry_renderer_ptr_;  // [changed]
 
     RenderOptionForAnnotation pick_point_opts_;
 
@@ -123,7 +123,7 @@ protected:
     std::function<void()> on_selection_moving_;
     std::function<void()> on_selection_moved_;
 
-protected: // new attributes listed below
+protected: // [changed] new attributes listed below
     int tag = 0;
     int length;
     std::string filename;
