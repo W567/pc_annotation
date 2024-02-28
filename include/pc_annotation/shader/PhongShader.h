@@ -10,20 +10,14 @@
 #include <Eigen/Core>
 #include <vector>
 
-#include "open3d/visualization/shader/ShaderWrapper.h"
 #include "open3d/visualization/shader/PhongShader.h"
 
 #include "pc_annotation/RenderOptionForAnnotation.h"
-
 #include "pc_annotation/shader/ShaderWrapperForAnnotation.h"
-
-#include "open3d/utility/Logging.h"
 
 namespace open3d {
 namespace visualization {
-
 namespace glsl {
-
 
 class PhongShaderForAnnotation : public ShaderWrapperForAnnotation {
 public:
@@ -141,6 +135,5 @@ protected:
 };
 
 }  // namespace glsl
-
 }  // namespace visualization
 }  // namespace open3d
