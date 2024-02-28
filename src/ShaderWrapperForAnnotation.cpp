@@ -15,6 +15,26 @@ namespace visualization {
 
 namespace glsl {
 
+
+
+bool ShaderWrapperForAnnotation::Render(const geometry::Geometry &geometry,
+                           const RenderOptionForAnnotation &option,
+                           const ViewControl &view) {
+    if (!compiled_) {
+        Compile();
+    }
+    if (!bound_) {
+        BindGeometry(geometry, option, view);
+    }
+    if (!compiled_ || !bound_) {
+        PrintShaderWarning("Something is wrong in compiling or binding.");
+        return false;
+    }
+    return RenderGeometry(geometry, option, view);
+}
+
+
+
 bool ShaderWrapperForAnnotation::Render(const geometry::Geometry &geometry,
                                         const std::vector<std::vector<int>> &labels,
                                         const RenderOptionForAnnotation &option,

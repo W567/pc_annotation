@@ -85,6 +85,43 @@ bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
 }
 
 
+bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
+                                            const RenderOptionForAnnotation &option,
+                                            const ViewControl &view) {
+    // If there is already geometry, we first unbind it.
+    // We use GL_STATIC_DRAW. When geometry changes, we clear buffers and
+    // rebind the geometry. Note that this approach is slow. If the geometry is
+    // changing per frame, consider implementing a new ShaderWrapper using
+    // GL_STREAM_DRAW, and replace UnbindGeometry() with Buffer Object
+    // Streaming mechanisms.
+    UnbindGeometry();
+
+    // Prepare data to be passed to GPU
+    std::vector<Eigen::Vector3f> points;
+    std::vector<Eigen::Vector3f> normals;
+    std::vector<Eigen::Vector3f> colors;
+    if (!PrepareBinding(geometry, option, view, points, normals, colors)) {
+        PrintShaderWarning("Binding failed when preparing data.");
+        return false;
+    }
+
+    // Create buffers and bind the geometry
+    glGenBuffers(1, &vertex_position_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_position_buffer_);
+    glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(Eigen::Vector3f),
+                 points.data(), GL_STATIC_DRAW);
+    glGenBuffers(1, &vertex_normal_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_normal_buffer_);
+    glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(Eigen::Vector3f),
+                 normals.data(), GL_STATIC_DRAW);
+    glGenBuffers(1, &vertex_color_buffer_);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_color_buffer_);
+    glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(Eigen::Vector3f),
+                 colors.data(), GL_STATIC_DRAW);
+    bound_ = true;
+    return true;
+}
+
 
 bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
                                             const std::vector<std::vector<int>> &labels,

@@ -34,12 +34,19 @@ public:
                const RenderOptionForAnnotation &option,
                const ViewControl &view);
 
+    bool Render(const geometry::Geometry &geometry,
+                const RenderOptionForAnnotation &option,
+                const ViewControl &view);
+
 protected:
     virtual bool BindGeometry(const geometry::Geometry &geometry,
                               const std::vector<std::vector<int>> &labels,
                               const RenderOptionForAnnotation &option,
                               const ViewControl &view) = 0;
 
+    virtual bool BindGeometry(const geometry::Geometry &geometry,
+                              const RenderOptionForAnnotation &option,
+                              const ViewControl &view) = 0;
 
 protected:
     bool compiled_ = false;

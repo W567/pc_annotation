@@ -38,6 +38,10 @@ protected:
                       const ViewControl &view) final;
 
     bool BindGeometry(const geometry::Geometry &geometry,
+                      const RenderOptionForAnnotation &option,
+                      const ViewControl &view) final;
+
+    bool BindGeometry(const geometry::Geometry &geometry,
                       const std::vector<std::vector<int>> &labels,
                       const RenderOptionForAnnotation &option,
                       const ViewControl &view) final;
