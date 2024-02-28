@@ -288,21 +288,24 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
         normals[i] = normal.cast<float>();
         Eigen::Vector3d color;
         switch (option.point_color_option_) {
-            case RenderOptionForAnnotation::PointColorOption::XCoordinate:
+            case RenderOptionForAnnotation::PointColorOption::XCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetXPercentage(point(0)));
                 break;
-            case RenderOptionForAnnotation::PointColorOption::YCoordinate:
+            }
+            case RenderOptionForAnnotation::PointColorOption::YCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetYPercentage(point(1)));
                 break;
-            case RenderOptionForAnnotation::PointColorOption::ZCoordinate:
+            }
+            case RenderOptionForAnnotation::PointColorOption::ZCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetZPercentage(point(2)));
                 break;
+            }
             case RenderOptionForAnnotation::PointColorOption::Color:
             case RenderOptionForAnnotation::PointColorOption::Default:
-            default:
+            default: {
                 if (pointcloud.HasColors()) {
                     color = pointcloud.colors_[i];
                 } else {
@@ -311,6 +314,7 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
                     color = Eigen::Vector3d::Zero(3);
                 }
                 break;
+            }
         }
         colors[i] = color.cast<float>();
     }
@@ -368,21 +372,24 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
         normals[i] = normal.cast<float>();
         Eigen::Vector3d color;
         switch (option.point_color_option_) {
-            case RenderOption::PointColorOption::XCoordinate:
+            case RenderOption::PointColorOption::XCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetXPercentage(point(0)));
                 break;
-            case RenderOption::PointColorOption::YCoordinate:
+            }
+            case RenderOption::PointColorOption::YCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetYPercentage(point(1)));
                 break;
-            case RenderOption::PointColorOption::ZCoordinate:
+            }
+            case RenderOption::PointColorOption::ZCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetZPercentage(point(2)));
                 break;
+            }
             case RenderOption::PointColorOption::Color:
             case RenderOption::PointColorOption::Default:
-            default:
+            default: {
                 if (pointcloud.HasColors()) {
                     color = pointcloud.colors_[i];
                 } else {
@@ -391,6 +398,7 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
                     color = Eigen::Vector3d::Zero(3);
                 }
                 break;
+            }
         }
         colors[i] = color.cast<float>();
     }
@@ -431,34 +439,29 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
         const auto &normal = pointcloud.normals_[i];
         points[i] = point.cast<float>();
         normals[i] = normal.cast<float>();
-        Eigen::Vector3d color;
+        Eigen::Vector3d color = Eigen::Vector3d::Zero(3);
         switch (option.point_color_option_) {
-            case RenderOptionForAnnotation::PointColorOption::XCoordinate:
+            case RenderOptionForAnnotation::PointColorOption::XCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetXPercentage(point(0)));
                 break;
-            case RenderOptionForAnnotation::PointColorOption::YCoordinate:
+            }
+            case RenderOptionForAnnotation::PointColorOption::YCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetYPercentage(point(1)));
                 break;
-            case RenderOptionForAnnotation::PointColorOption::ZCoordinate:
+            }
+            case RenderOptionForAnnotation::PointColorOption::ZCoordinate: {
                 color = global_color_map.GetColor(
                         view.GetBoundingBox().GetZPercentage(point(2)));
                 break;
-            
-            case RenderOptionForAnnotation::PointColorOption::Label:
-                if (labels.size() != 0) {
-                    int size = (int)labels.size();
-                    for (int k = 0; k < size; k++) {
+            }
+            case RenderOptionForAnnotation::PointColorOption::Label: {
+                int label_size = (int)labels.size();
+                if (label_size != 0) {
+                    for (int k = 0; k < label_size; k++) {
                         if (labels[k][i] == 1) {
-                            color[k] = primary_color[k];
-                        } else {
-                            color[k] = 0;
-                        }
-                    }
-                    if (size < 3) {
-                        for (int k = 0; k < 3 - size; k++) {
-                            color[size + k] = 0;
+                            color += primary_color[k];
                         }
                     }
                 } else {
@@ -467,9 +470,10 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
                     color = Eigen::Vector3d::Zero(3);
                 }
                 break;
+            }
             case RenderOptionForAnnotation::PointColorOption::Color:
             case RenderOptionForAnnotation::PointColorOption::Default:
-            default:
+            default: {
                 if (pointcloud.HasColors()) {
                     color = pointcloud.colors_[i];
                 } else {
@@ -478,6 +482,7 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
                     color = Eigen::Vector3d::Zero(3);
                 }
                 break;
+            }
         }
         colors[i] = color.cast<float>();
     }

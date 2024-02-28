@@ -464,22 +464,25 @@ void VisualizerWithAnnotation::KeyPressCallback(
 
     if (action != GLFW_RELEASE) {
         switch (key) {
-            case GLFW_KEY_X:
+            case GLFW_KEY_X: {
                 view_control.ToggleEditingX();
                 utility::LogDebug(
                         "[Visualizer] Enter orthogonal X editing mode.");
                 break;
-            case GLFW_KEY_Y:
+            }
+            case GLFW_KEY_Y: {
                 view_control.ToggleEditingY();
                 utility::LogDebug(
                         "[Visualizer] Enter orthogonal Y editing mode.");
                 break;
-            case GLFW_KEY_Z:
+            }
+            case GLFW_KEY_Z: {
                 view_control.ToggleEditingZ();
-                utility::LogInfo(
+                utility::LogDebug(
                         "[Visualizer] Enter orthogonal Z editing mode.");
                 break;
-            case GLFW_KEY_R:
+            }
+            case GLFW_KEY_R: {
                 if (mods & GLFW_MOD_CONTROL) {
                     ClearPickedPoints();
 
@@ -491,6 +494,7 @@ void VisualizerWithAnnotation::KeyPressCallback(
                     //                              mods);
                 }
                 break;
+            }
             case GLFW_KEY_MINUS: {
                 if (action == GLFW_PRESS) {
                     SetPointSize(pick_point_opts_.point_size_ - 1.0);
@@ -513,7 +517,7 @@ void VisualizerWithAnnotation::KeyPressCallback(
             }
 
             // [changed] new keys for annotation listed below
-            case GLFW_KEY_SPACE:
+            case GLFW_KEY_SPACE: {
                 if (selected_points_.size() > 0) {
                     auto points = GetGeometryPoints(geometry_ptr_);
                     length = points->size();
@@ -530,6 +534,7 @@ void VisualizerWithAnnotation::KeyPressCallback(
                     utility::LogInfo("Please select points before annotation.");
                 }
                 break;
+            }
 
             case GLFW_KEY_N: {
                 if (mods & GLFW_MOD_CONTROL) {
@@ -586,54 +591,61 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 break;
             }
 
-            case GLFW_KEY_0:
+            case GLFW_KEY_0: {
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::Default;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to DEFAULT.");
                 break;
+            }
 
-            case GLFW_KEY_1:
+            case GLFW_KEY_1: {
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::Color;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to COLOR.");
                 break;
+            }
 
-            case GLFW_KEY_2:
+            case GLFW_KEY_2: {
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::XCoordinate;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to X.");
                 break;
+            }
 
-            case GLFW_KEY_3:
+            case GLFW_KEY_3: {
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::YCoordinate;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to Y.");
                 break;
+            }
 
-            case GLFW_KEY_4:
+            case GLFW_KEY_4: {
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::ZCoordinate;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to Z.");
                 break;
+            }
 
-            case GLFW_KEY_5:
+            case GLFW_KEY_5: {
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::Label;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to LABEL");
                 break;
+            }
 
-            case GLFW_KEY_9:
+            case GLFW_KEY_9: {
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::Normal;
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to NORMAL.");
                 break;
+            }
 
             default:
                 Visualizer::KeyPressCallback(window, key, scancode, action,

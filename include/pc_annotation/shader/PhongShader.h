@@ -96,9 +96,9 @@ class PhongShaderForAnnotationForPointCloud : public PhongShaderForAnnotation {
 public:
     PhongShaderForAnnotationForPointCloud() :
             PhongShaderForAnnotation("PhongShaderForAnnotationForPointCloud") {
-        primary_color.push_back(255 << 16);
-        primary_color.push_back(255 << 8);
-        primary_color.push_back(255);
+        primary_color.push_back(Eigen::Vector3d(255.0, 0.0, 0.0));
+        primary_color.push_back(Eigen::Vector3d(0.0, 255.0, 0.0));
+        primary_color.push_back(Eigen::Vector3d(0.0, 0.0, 255.0));
     }
 
 protected:
@@ -129,7 +129,7 @@ protected:
                         std::vector<Eigen::Vector3f> &colors,
                         const std::vector<std::vector<int>> &labels);
 
-    std::vector<long> primary_color;
+    std::vector<Eigen::Vector3d> primary_color;
 };
 
 }  // namespace glsl
