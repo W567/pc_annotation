@@ -19,17 +19,6 @@ namespace visualization {
 
 namespace glsl {
 
-class GeometryRendererForAnnotation : public GeometryRenderer{
-public:
-    virtual ~GeometryRendererForAnnotation() {}
-
-    bool AddLabels(const std::vector<std::vector<int>>& labels);
-
-protected:
-    const std::vector<std::vector<int>>* label_ptr_;
-};
-
-
 class PointCloudRendererForAnnotation : public PointCloudRenderer {
 public:
     ~PointCloudRendererForAnnotation() override {}

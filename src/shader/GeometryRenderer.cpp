@@ -7,30 +7,13 @@
 
 #include "pc_annotation/shader/GeometryRenderer.h"
 
-#include "open3d/geometry/Image.h"
-#include "open3d/geometry/LineSet.h"
 #include "open3d/geometry/PointCloud.h"
-#include "open3d/geometry/TriangleMesh.h"
-#include "open3d/visualization/utility/PointCloudPicker.h"
-#include "open3d/visualization/utility/SelectionPolygon.h"
-#include "open3d/visualization/visualizer/RenderOptionWithEditing.h"
-#include "open3d/utility/Logging.h"
-
-#include "pc_annotation/shader/ShaderWrapperForAnnotation.h"
 
 namespace open3d {
 namespace visualization {
-
 namespace glsl {
 
-bool GeometryRendererForAnnotation::AddLabels(const std::vector<std::vector<int>>& labels)
-{
-    label_ptr_ = &labels;
-    return UpdateGeometry();
-}
-
-bool PointCloudRendererForAnnotation::AddLabels(const std::vector<std::vector<int>>& labels)
-{
+bool PointCloudRendererForAnnotation::AddLabels(const std::vector<std::vector<int>>& labels) {
     label_ptr_ = &labels;
     return UpdateGeometry();
 }
@@ -54,32 +37,16 @@ bool PointCloudRendererForAnnotation::Render(const RenderOptionForAnnotation &op
             RenderOptionForAnnotation::PointColorOption::Normal) {
             success &= normal_point_shader_.Render(pointcloud, option, view);
         } else {
-            if (label_ptr_ == nullptr)
-            {
-                // utility::LogInfo("[Visualizer] ENTER 0 ");
+            if (label_ptr_ == nullptr) {
                 success &= phong_point_shader_.Render(pointcloud, option, view);
-            }
-            else if (labels.size() == 0 || pointcloud.points_.size() != labels[0].size())
-            {
-                // if (labels.size() == 0)
-                // {
-                //     utility::LogInfo("[Visualizer] ENTER 1, outer size: {:d}", labels.size());
-                // }
-                // else
-                // {
-                //     utility::LogInfo("[Visualizer] ENTER 1, outer size: {:d}, inner size: {:d}", labels.size(), labels[0].size());
-                // }
+            } else if (labels.size() == 0 || pointcloud.points_.size() != labels[0].size()) {
                 success &= phong_point_shader_.Render(pointcloud, option, view);
-            }
-            else
-            {
-                // utility::LogInfo("[Visualizer] ENTER 2, outer size: {:d}, inner size: {:d}", labels.size(), labels[0].size());
+            } else {
                 success &= phong_point_shader_.Render(pointcloud, labels, option, view);
             }
         }
         if (option.point_show_normal_) {
-            success &=
-                    simpleblack_normal_shader_.Render(pointcloud, option, view);
+            success &= simpleblack_normal_shader_.Render(pointcloud, option, view);
         }
     } else {
         success &= simple_point_shader_.Render(pointcloud, option, view);
@@ -88,6 +55,5 @@ bool PointCloudRendererForAnnotation::Render(const RenderOptionForAnnotation &op
 }
 
 }  // namespace glsl
-
 }  // namespace visualization
 }  // namespace open3d
