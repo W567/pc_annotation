@@ -7,72 +7,10 @@
 
 #include "pc_annotation/VisualizerForAnnotation.h"
 
-#include "open3d/geometry/TriangleMesh.h"
+#include "open3d/utility/Logging.h"
 
 namespace open3d {
-
 namespace visualization {
-
-void VisualizerForAnnotation::BuildUtilities() {
-    glfwMakeContextCurrent(window_);
-
-    // 0. Build coordinate frame
-    const auto boundingbox = GetViewControl().GetBoundingBox();
-    double extent = std::max(0.01, boundingbox.GetMaxExtent() * 0.2);
-    coordinate_frame_mesh_ptr_ = geometry::TriangleMesh::CreateCoordinateFrame(
-            extent); // boundingbox.min_bound_
-    coordinate_frame_mesh_renderer_ptr_ =
-            std::make_shared<glsl::CoordinateFrameRenderer>();
-    if (!coordinate_frame_mesh_renderer_ptr_->AddGeometry(
-                coordinate_frame_mesh_ptr_)) {
-        return;
-    }
-    utility_ptrs_.push_back(coordinate_frame_mesh_ptr_);
-    utility_renderer_ptrs_.push_back(coordinate_frame_mesh_renderer_ptr_);
-}
-
-void VisualizerForAnnotation::Run() {
-    BuildUtilities();
-    UpdateWindowTitle();
-    while (bool(animation_callback_func_) ? PollEvents() : WaitEvents()) {
-        if (bool(animation_callback_func_in_loop_)) {
-            if (animation_callback_func_in_loop_(this)) {
-                UpdateGeometry();
-            }
-            // Set render flag as dirty anyways, because when we use callback
-            // functions, we assume something has been changed in the callback
-            // and the redraw event should be triggered.
-            UpdateRender();
-        }
-    }
-}
-
-bool VisualizerForAnnotation::WaitEvents() {
-    if (!is_initialized_) {
-        return false;
-    }
-    glfwMakeContextCurrent(window_);
-    if (is_redraw_required_) {
-        WindowRefreshCallback(window_);
-    }
-    animation_callback_func_in_loop_ = animation_callback_func_;
-    glfwWaitEvents();
-    return !glfwWindowShouldClose(window_);
-}
-
-bool VisualizerForAnnotation::PollEvents() {
-    if (!is_initialized_) {
-        return false;
-    }
-    glfwMakeContextCurrent(window_);
-    if (is_redraw_required_) {
-        WindowRefreshCallback(window_);
-    }
-    animation_callback_func_in_loop_ = animation_callback_func_;
-    glfwPollEvents();
-    return !glfwWindowShouldClose(window_);
-}
-
 
 void VisualizerForAnnotation::Render(bool render_screen) {
     glfwMakeContextCurrent(window_);
@@ -131,27 +69,19 @@ void VisualizerForAnnotation::Render(bool render_screen) {
     glfwSwapBuffers(window_);
 }
 
-
 bool VisualizerForAnnotation::AddGeometry(
         std::shared_ptr<const geometry::Geometry> geometry_ptr,
         bool reset_bounding_box) {
-    if (!is_initialized_) {
-        return false;
-    }
+    if (!is_initialized_) { return false; }
     if (!geometry_ptr.get()) {
-        utility::LogWarning(
-                "[AddGeometry] Invalid pointer. Possibly a null pointer or "
-                "None was passed in.");
+        utility::LogWarning("[AddGeometry] Invalid pointer. Possibly a null pointer or "
+                            "None was passed in.");
         return false;
     }
 
     glfwMakeContextCurrent(window_);
     std::shared_ptr<glsl::PointCloudRendererForAnnotation> renderer_ptr;
-    if (geometry_ptr->GetGeometryType() ==
-        geometry::Geometry::GeometryType::Unspecified) {
-        return false;
-    } else if (geometry_ptr->GetGeometryType() ==
-               geometry::Geometry::GeometryType::PointCloud) {
+    if (geometry_ptr->GetGeometryType() == geometry::Geometry::GeometryType::PointCloud) {
         renderer_ptr = std::make_shared<glsl::PointCloudRendererForAnnotation>();
         if (!renderer_ptr->AddGeometry(geometry_ptr)) {
             return false;
@@ -165,12 +95,10 @@ bool VisualizerForAnnotation::AddGeometry(
         view_control_ptr_->FitInGeometry(*geometry_ptr);
         ResetViewPoint();
     }
-    utility::LogDebug(
-            "Add geometry and update bounding box to {}",
-            view_control_ptr_->GetBoundingBox().GetPrintInfo().c_str());
+    utility::LogDebug("Add geometry and update bounding box to {}",
+                      view_control_ptr_->GetBoundingBox().GetPrintInfo().c_str());
     return UpdateGeometry(geometry_ptr);
 }
-
 
 }  // namespace visualization
 }  // namespace open3d
