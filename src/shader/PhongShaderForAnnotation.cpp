@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: MIT
 // ----------------------------------------------------------------------------
 
-#include "pc_annotation/shader/PhongShader.h"
+#include "pc_annotation/shader/PhongShaderForAnnotation.h"
 
 #include "open3d/geometry/PointCloud.h"
 #include "open3d/geometry/TriangleMesh.h"

@@ -9,7 +9,7 @@
 
 #include "open3d/visualization/shader/GeometryRenderer.h"
 
-#include "pc_annotation/shader/PhongShader.h"
+#include "pc_annotation/shader/PhongShaderForAnnotation.h"
 #include "pc_annotation/RenderOptionForAnnotation.h"
 
 namespace open3d {
