@@ -7,24 +7,17 @@
 
 #pragma once
 
-#include <Eigen/Core>
-#include <functional>
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "open3d/geometry/Geometry.h"
 #include "open3d/geometry/PointCloud.h"
-
-#include "open3d/utility/Logging.h"
 
 namespace open3d {
 namespace visualization {
 
 bool DrawGeometriesWithAnnotation(
-        const std::vector<std::shared_ptr<const geometry::PointCloud>>
-                &geometry_ptrs,
+        const std::vector<std::shared_ptr<const geometry::PointCloud>> &geometry_ptrs,
         const std::string &filename,
         const std::string &window_name = "Open3D",
         int width = 640,
