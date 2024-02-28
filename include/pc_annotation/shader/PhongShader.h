@@ -32,11 +32,9 @@ protected:
     bool BindGeometry(const geometry::Geometry &geometry,
                       const RenderOption &option,
                       const ViewControl &view) final;
-
     bool BindGeometry(const geometry::Geometry &geometry,
                       const RenderOptionForAnnotation &option,
                       const ViewControl &view) final;
-
     bool BindGeometry(const geometry::Geometry &geometry,
                       const std::vector<std::vector<int>> &labels,
                       const RenderOptionForAnnotation &option,
@@ -57,7 +55,6 @@ protected:
                                 std::vector<Eigen::Vector3f> &points,
                                 std::vector<Eigen::Vector3f> &normals,
                                 std::vector<Eigen::Vector3f> &colors) = 0;
-
     virtual bool PrepareBinding(const geometry::Geometry &geometry,
                         const RenderOptionForAnnotation &option,
                         const ViewControl &view,
@@ -97,7 +94,8 @@ protected:
 
 class PhongShaderForAnnotationForPointCloud : public PhongShaderForAnnotation {
 public:
-    PhongShaderForAnnotationForPointCloud() : PhongShaderForAnnotation("PhongShaderForAnnotationForPointCloud") {
+    PhongShaderForAnnotationForPointCloud() :
+            PhongShaderForAnnotation("PhongShaderForAnnotationForPointCloud") {
         primary_color.push_back(255 << 16);
         primary_color.push_back(255 << 8);
         primary_color.push_back(255);

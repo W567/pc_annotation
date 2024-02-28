@@ -14,9 +14,7 @@
 
 namespace open3d {
 namespace visualization {
-
 namespace glsl {
-
 
 bool PhongShaderForAnnotation::Compile() {
     if (!CompileShaders(PhongVertexShader, NULL, PhongFragmentShader)) {
@@ -84,7 +82,6 @@ bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
     return true;
 }
 
-
 bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
                                             const RenderOptionForAnnotation &option,
                                             const ViewControl &view) {
@@ -121,7 +118,6 @@ bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
     bound_ = true;
     return true;
 }
-
 
 bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
                                             const std::vector<std::vector<int>> &labels,
@@ -160,9 +156,6 @@ bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
     bound_ = true;
     return true;
 }
-
-
-
 
 bool PhongShaderForAnnotation::RenderGeometry(const geometry::Geometry &geometry,
                                  const RenderOption &option,
@@ -246,23 +239,6 @@ void PhongShaderForAnnotation::SetLighting(const ViewControl &view,
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 bool PhongShaderForAnnotationForPointCloud::PrepareRendering(
         const geometry::Geometry &geometry,
         const RenderOptionForAnnotation &option,
@@ -342,8 +318,6 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
     draw_arrays_size_ = GLsizei(points.size());
     return true;
 }
-
-
 
 bool PhongShaderForAnnotationForPointCloud::PrepareRendering(
         const geometry::Geometry &geometry,
@@ -425,7 +399,6 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
     return true;
 }
 
-
 bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
         const geometry::Geometry &geometry,
         const RenderOptionForAnnotation &option,
@@ -474,30 +447,21 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
                 break;
             
             case RenderOptionForAnnotation::PointColorOption::Label:
-                if (labels.size() != 0)
-                {
+                if (labels.size() != 0) {
                     int size = (int)labels.size();
-                    for (int k = 0; k < size; k++)
-                    {
-                        if (labels[k][i] == 1)
-                        {
+                    for (int k = 0; k < size; k++) {
+                        if (labels[k][i] == 1) {
                             color[k] = primary_color[k];
-                        }
-                        else
-                        {
+                        } else {
                             color[k] = 0;
                         }
                     }
-                    if (size < 3)
-                    {
-                        for (int k = 0; k < 3 - size; k++)
-                        {
+                    if (size < 3) {
+                        for (int k = 0; k < 3 - size; k++) {
                             color[size + k] = 0;
                         }
                     }
-                }
-                else
-                {
+                } else {
                     // color = global_color_map.GetColor(
                     //         view.GetBoundingBox().GetZPercentage(point(2)));
                     color = Eigen::Vector3d::Zero(3);
