@@ -10,11 +10,6 @@
 #include <unordered_map>
 #include <Eigen/Core>
 
-#include "open3d/geometry/Geometry.h"
-#include "open3d/visualization/shader/GeometryRenderer.h"
-#include "open3d/visualization/utility/ColorMap.h"
-#include "open3d/visualization/visualizer/ViewControl.h"
-
 #include "pc_annotation/VisualizerForAnnotation.h"
 #include "pc_annotation/RenderOptionForAnnotation.h"
 #include "pc_annotation/shader/GeometryRenderer.h"
@@ -70,10 +65,6 @@ public:
     void RegisterSelectionMovedCallback(std::function<void()> f);
     void SetFilename(std::string name);
 
-    bool PollEvents();
-
-    bool WaitEvents();
-
 protected:
     bool InitViewControl() override;
     bool InitRenderOption() override;
@@ -97,6 +88,9 @@ protected:
     void DragSelectedPoints(const Eigen::Vector3d &delta, DragType type);
     const std::vector<Eigen::Vector3d> *GetGeometryPoints(
             std::shared_ptr<const geometry::Geometry> geometry);
+
+
+
     void SaveTag();
     bool ReadTag();
 

@@ -231,7 +231,8 @@ void VisualizerWithAnnotation::PrintVisualizerHelp() {
 void VisualizerWithAnnotation::UpdateWindowTitle() {
     if (window_ != NULL) {
         auto &view_control = (ViewControlWithEditing &)(*view_control_ptr_);
-        auto title = window_name_ + " - " + view_control.GetStatusString() + " - Current Tag:" + std::to_string(tag);
+        auto title = window_name_ + " - " + view_control.GetStatusString() + 
+                     " - Current Tag:" + std::to_string(tag);
         glfwSetWindowTitle(window_, title.c_str());
     }
 }
@@ -312,9 +313,9 @@ float VisualizerWithAnnotation::GetDepth(int winX, int winY) {
 }
 
 std::vector<int> VisualizerWithAnnotation::PickPoints(double winX,
-                                                           double winY,
-                                                           double w,
-                                                           double h) {
+                                                      double winY,
+                                                      double w,
+                                                      double h) {
     points_in_rect_.clear();
 
     auto renderer_ptr = std::make_shared<glsl::PointCloudPickingRenderer>();
@@ -475,24 +476,22 @@ void VisualizerWithAnnotation::SaveTag()
 {
     std::ofstream file;
     std::string tmp = filename;
-    tmp.pop_back();
-    tmp.pop_back();
-    tmp.pop_back();
-    std::string ext = "label";
+    
+    size_t pos_dot = tmp.find_last_of(".");
+    if (pos_dot != std::string::npos) {
+        tmp = tmp.substr(0, pos_dot);
+    }
+
+    std::string ext = ".label";
     file.open(tmp + ext);
 
     int size = labels.size();
-    for (int i = 0; i < length; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
+    for (int i = 0; i < length; i++) {
+        for (int j = 0; j < size; j++) {
             file << std::to_string(labels[j][i]);
-            if (j < size - 1)
-            {
+            if (j < size - 1) {
                 file << " ";
-            }
-            else
-            {
+            } else {
                 file << "\n";
             }
         }
@@ -614,6 +613,30 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 break;
             }
 
+            case GLFW_KEY_S: {
+                utility::LogInfo("Press S, mods: #{:d}", mods);
+                SaveTag();
+                break;
+            }
+
+            case GLFW_KEY_F: {
+                if (mods & GLFW_MOD_CONTROL) {
+                  render_option_ptr_->show_coordinate_frame_ = !render_option_ptr_->show_coordinate_frame_;
+                } else {
+                    view_control.SetEditingMode(
+                            ViewControlWithEditing::EditingMode::FreeMode);
+                    utility::LogDebug("[Visualizer] Enter freeview mode.");
+                }
+                break;
+            }
+
+            case GLFW_KEY_ESCAPE:
+            case GLFW_KEY_Q: {
+                SaveTag();
+                Close();
+                break;
+            }
+
 
             case GLFW_KEY_0:
                 render_option_ptr_->point_color_option_ =
@@ -651,7 +674,6 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 break;
 
             case GLFW_KEY_5:
-                utility::LogInfo("Press 5");
                 render_option_ptr_->point_color_option_ =
                         RenderOptionForAnnotation::PointColorOption::Label;
                 UpdateGeometry();
@@ -664,30 +686,6 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 UpdateGeometry();
                 utility::LogDebug("[VisualizerForAnnotation] Point color set to NORMAL.");
                 break;
-
-            case GLFW_KEY_S: {
-                utility::LogInfo("Press S, mods: #{:d}", mods);
-                SaveTag();
-                break;
-            }
-
-            case GLFW_KEY_F: {
-                if (mods & GLFW_MOD_CONTROL) {
-                  render_option_ptr_->show_coordinate_frame_ = !render_option_ptr_->show_coordinate_frame_;
-                } else {
-                    view_control.SetEditingMode(
-                            ViewControlWithEditing::EditingMode::FreeMode);
-                    utility::LogDebug("[Visualizer] Enter freeview mode.");
-                }
-                break;
-            }
-
-            case GLFW_KEY_ESCAPE:
-            case GLFW_KEY_Q: {
-                SaveTag();
-                Close();
-                break;
-            }
 
             case GLFW_KEY_MINUS: {
                 if (action == GLFW_PRESS) {
@@ -720,8 +718,8 @@ void VisualizerWithAnnotation::KeyPressCallback(
 }
 
 void VisualizerWithAnnotation::MouseMoveCallback(GLFWwindow *window,
-                                                      double x,
-                                                      double y) {
+                                                 double x,
+                                                 double y) {
     auto &view_control = (ViewControlWithEditing &)(*view_control_ptr_);
     if (selection_mode_ != SelectionMode::None) {
 #ifdef __APPLE__
@@ -953,21 +951,11 @@ const std::vector<Eigen::Vector3d>
             points = &cloud->points_;
             break;
         }
-        case geometry::Geometry::GeometryType::LineSet: {
-            auto lines =
-                    std::static_pointer_cast<const geometry::LineSet>(geometry);
-            points = &lines->points_;
-            break;
-        }
+        case geometry::Geometry::GeometryType::LineSet:
         case geometry::Geometry::GeometryType::MeshBase:
         case geometry::Geometry::GeometryType::TriangleMesh:
         case geometry::Geometry::GeometryType::HalfEdgeTriangleMesh:
-        case geometry::Geometry::GeometryType::TetraMesh: {
-            auto mesh = std::static_pointer_cast<const geometry::MeshBase>(
-                    geometry);
-            points = &mesh->vertices_;
-            break;
-        }
+        case geometry::Geometry::GeometryType::TetraMesh:
         case geometry::Geometry::GeometryType::Image:
         case geometry::Geometry::GeometryType::RGBDImage:
         case geometry::Geometry::GeometryType::VoxelGrid:
@@ -1003,36 +991,6 @@ void VisualizerWithAnnotation::SetPointSize(double size) {
     opt = &utility_renderer_opts_[ui_selected_points_renderer_ptr_];
     opt->SetPointSize(size);
 }
-
-
-bool VisualizerWithAnnotation::WaitEvents() {
-    utility::LogInfo("  -- Enter waitEvents --");
-    if (!is_initialized_) {
-        return false;
-    }
-    glfwMakeContextCurrent(window_);
-    if (is_redraw_required_) {
-        WindowRefreshCallback(window_);
-    }
-    animation_callback_func_in_loop_ = animation_callback_func_;
-    glfwWaitEvents();
-    return !glfwWindowShouldClose(window_);
-}
-
-bool VisualizerWithAnnotation::PollEvents() {
-    utility::LogInfo("  -- Enter PollEvents --");
-    if (!is_initialized_) {
-        return false;
-    }
-    glfwMakeContextCurrent(window_);
-    if (is_redraw_required_) {
-        WindowRefreshCallback(window_);
-    }
-    animation_callback_func_in_loop_ = animation_callback_func_;
-    glfwPollEvents();
-    return !glfwWindowShouldClose(window_);
-}
-
 
 }  // namespace visualization
 }  // namespace open3d
