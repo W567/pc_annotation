@@ -35,7 +35,10 @@ pybind11_add_module(pc_annotation
   src/DrawGeometry.cpp
   src/VisualizerForAnnotation.cpp
   src/VisualizerForAnnotationCallback.cpp
-  src/VisualizerWithAnnotation.cpp)
+  src/VisualizerWithAnnotation.cpp
+  src/GeometryRenderer.cpp
+  src/PhongShader.cpp
+  src/ShaderWrapperForAnnotation.cpp)
 
 target_link_libraries(pc_annotation
   PRIVATE Open3D::Open3D

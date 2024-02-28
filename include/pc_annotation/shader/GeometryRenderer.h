@@ -39,6 +39,7 @@ public:
 
 protected:
     PhongShaderForAnnotationForPointCloud phong_point_shader_;
+    const std::vector<std::vector<int>>* label_ptr_;
 };
 
 }  // namespace glsl

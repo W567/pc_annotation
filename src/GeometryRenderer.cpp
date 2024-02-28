@@ -16,6 +16,8 @@
 #include "open3d/visualization/visualizer/RenderOptionWithEditing.h"
 #include "open3d/utility/Logging.h"
 
+#include "pc_annotation/shader/ShaderWrapperForAnnotation.h"
+
 namespace open3d {
 namespace visualization {
 

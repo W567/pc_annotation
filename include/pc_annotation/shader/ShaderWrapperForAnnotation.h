@@ -10,7 +10,7 @@
 #include <GL/glew.h>
 
 #include "open3d/geometry/Geometry.h"
-#include "open3d/visualization/visualizer/shader/ShaderWrapper.h"
+#include "open3d/visualization/shader/ShaderWrapper.h"
 
 #include "pc_annotation/RenderOptionForAnnotation.h"
 
@@ -26,7 +26,7 @@ public:
     ShaderWrapperForAnnotation &operator=(const ShaderWrapperForAnnotation &) = delete;
 
 protected:
-    ShaderWrapperForAnnotation(const std::string &name) : shader_name_(name) {}
+    ShaderWrapperForAnnotation(const std::string &name) : ShaderWrapper(name) {}
 
 public:
     bool Render(const geometry::Geometry &geometry,
