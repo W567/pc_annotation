@@ -12,10 +12,7 @@
 
 namespace open3d {
 namespace visualization {
-
 namespace glsl {
-
-
 
 bool ShaderWrapperForAnnotation::Render(const geometry::Geometry &geometry,
                            const RenderOptionForAnnotation &option,
@@ -32,8 +29,6 @@ bool ShaderWrapperForAnnotation::Render(const geometry::Geometry &geometry,
     }
     return RenderGeometry(geometry, option, view);
 }
-
-
 
 bool ShaderWrapperForAnnotation::Render(const geometry::Geometry &geometry,
                                         const std::vector<std::vector<int>> &labels,
@@ -53,6 +48,5 @@ bool ShaderWrapperForAnnotation::Render(const geometry::Geometry &geometry,
 }
 
 }  // namespace glsl
-
 }  // namespace visualization
 }  // namespace open3d

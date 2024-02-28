@@ -14,14 +14,11 @@
 
 #include "pc_annotation/RenderOptionForAnnotation.h"
 
-#include "open3d/utility/Logging.h"
-
 namespace open3d {
 namespace visualization {
-
 namespace glsl {
 
-class ShaderWrapperForAnnotation : public ShaderWrapper{
+class ShaderWrapperForAnnotation : public ShaderWrapper {
 public:
     virtual ~ShaderWrapperForAnnotation() {}
     ShaderWrapperForAnnotation(const ShaderWrapperForAnnotation &) = delete;
@@ -50,17 +47,10 @@ protected:
                               const RenderOptionForAnnotation &option,
                               const ViewControl &view) = 0;
 
-protected:
-
-    void SetShaderName(const std::string &shader_name) {
-        shader_name_ = shader_name;
-    }
-
 private:
     std::string shader_name_ = "ShaderWrapperForAnnotation";
 };
 
 }  // namespace glsl
-
 }  // namespace visualization
 }  // namespace open3d
