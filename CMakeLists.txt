@@ -1,7 +1,6 @@
 # On Ubuntu 18.04, get the latest CMake from https://apt.kitware.com/.
 cmake_minimum_required(VERSION 3.18)
 
-set(CMAKE_BUILD_TYPE Release)
 project(pc_annotation LANGUAGES C CXX)
 
 # The options need to be the same as Open3D's default
@@ -16,15 +15,6 @@ endif()
 
 # Find installed Open3D, which exports Open3D::Open3D
 find_package(Open3D REQUIRED)
-
-# openmp
-find_package(OpenMP REQUIRED)
-
-# Find the CGAL library
-find_package(CGAL REQUIRED)
-
-# Include CGAL's directories and libraries
-include(${CGAL_USE_FILE})
 
 find_package(pybind11 REQUIRED)
 
@@ -42,8 +32,6 @@ pybind11_add_module(pc_annotation
 
 target_link_libraries(pc_annotation
   PRIVATE Open3D::Open3D
-  PRIVATE OpenMP::OpenMP_CXX
-  PRIVATE ${CGAL_LIBRARIES}
   PRIVATE pybind11::module)
 
 # On Windows if BUILD_SHARED_LIBS is enabled, copy .dll files to the executable directory
