@@ -17,7 +17,7 @@ namespace glsl {
 
 bool ShaderWrapperForAnnotation::Render(const geometry::Geometry &geometry,
                                         const std::vector<std::vector<int>> &labels,
-                                        const RenderOption &option,
+                                        const RenderOptionForAnnotation &option,
                                         const ViewControl &view) {
     if (!compiled_) {
         Compile();

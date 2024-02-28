@@ -19,7 +19,7 @@ namespace glsl {
 
 bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
                                             const std::vector<std::vector<int>> &labels,
-                                            const RenderOption &option,
+                                            const RenderOptionForAnnotation &option,
                                             const ViewControl &view) {
     // If there is already geometry, we first unbind it.
     // We use GL_STATIC_DRAW. When geometry changes, we clear buffers and
@@ -54,6 +54,267 @@ bool PhongShaderForAnnotation::BindGeometry(const geometry::Geometry &geometry,
     bound_ = true;
     return true;
 }
+
+
+bool PhongShaderForAnnotationForPointCloud::PrepareRendering(
+        const geometry::Geometry &geometry,
+        const RenderOptionForAnnotation &option,
+        const ViewControl &view) {
+    if (geometry.GetGeometryType() !=
+        geometry::Geometry::GeometryType::PointCloud) {
+        PrintShaderWarning("Rendering type is not geometry::PointCloud.");
+        return false;
+    }
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GLenum(option.GetGLDepthFunc()));
+    glPointSize(GLfloat(option.point_size_));
+    SetLighting(view, option);
+    return true;
+}
+
+bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
+        const geometry::Geometry &geometry,
+        const RenderOptionForAnnotation &option,
+        const ViewControl &view,
+        std::vector<Eigen::Vector3f> &points,
+        std::vector<Eigen::Vector3f> &normals,
+        std::vector<Eigen::Vector3f> &colors) {
+    if (geometry.GetGeometryType() !=
+        geometry::Geometry::GeometryType::PointCloud) {
+        PrintShaderWarning("Rendering type is not geometry::PointCloud.");
+        return false;
+    }
+    const geometry::PointCloud &pointcloud =
+            (const geometry::PointCloud &)geometry;
+    if (!pointcloud.HasPoints()) {
+        PrintShaderWarning("Binding failed with empty pointcloud.");
+        return false;
+    }
+    if (!pointcloud.HasNormals()) {
+        PrintShaderWarning("Binding failed with pointcloud with no normals.");
+        return false;
+    }
+    const ColorMap &global_color_map = *GetGlobalColorMap();
+    points.resize(pointcloud.points_.size());
+    normals.resize(pointcloud.points_.size());
+    colors.resize(pointcloud.points_.size());
+    for (size_t i = 0; i < pointcloud.points_.size(); i++) {
+        const auto &point = pointcloud.points_[i];
+        const auto &normal = pointcloud.normals_[i];
+        points[i] = point.cast<float>();
+        normals[i] = normal.cast<float>();
+        Eigen::Vector3d color;
+        switch (option.point_color_option_) {
+            case RenderOptionForAnnotation::PointColorOption::XCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetXPercentage(point(0)));
+                break;
+            case RenderOptionForAnnotation::PointColorOption::YCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetYPercentage(point(1)));
+                break;
+            case RenderOptionForAnnotation::PointColorOption::ZCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetZPercentage(point(2)));
+                break;
+            case RenderOptionForAnnotation::PointColorOption::Color:
+            case RenderOptionForAnnotation::PointColorOption::Default:
+            default:
+                if (pointcloud.HasColors()) {
+                    color = pointcloud.colors_[i];
+                } else {
+                    // color = global_color_map.GetColor(
+                    //         view.GetBoundingBox().GetZPercentage(point(2)));
+                    color = Eigen::Vector3d::Zero(3);
+                }
+                break;
+        }
+        colors[i] = color.cast<float>();
+    }
+    draw_arrays_mode_ = GL_POINTS;
+    draw_arrays_size_ = GLsizei(points.size());
+    return true;
+}
+
+
+
+bool PhongShaderForAnnotationForPointCloud::PrepareRendering(
+        const geometry::Geometry &geometry,
+        const RenderOption &option,
+        const ViewControl &view) {
+    if (geometry.GetGeometryType() !=
+        geometry::Geometry::GeometryType::PointCloud) {
+        PrintShaderWarning("Rendering type is not geometry::PointCloud.");
+        return false;
+    }
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GLenum(option.GetGLDepthFunc()));
+    glPointSize(GLfloat(option.point_size_));
+    SetLighting(view, option);
+    return true;
+}
+
+bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
+        const geometry::Geometry &geometry,
+        const RenderOption &option,
+        const ViewControl &view,
+        std::vector<Eigen::Vector3f> &points,
+        std::vector<Eigen::Vector3f> &normals,
+        std::vector<Eigen::Vector3f> &colors) {
+    if (geometry.GetGeometryType() !=
+        geometry::Geometry::GeometryType::PointCloud) {
+        PrintShaderWarning("Rendering type is not geometry::PointCloud.");
+        return false;
+    }
+    const geometry::PointCloud &pointcloud =
+            (const geometry::PointCloud &)geometry;
+    if (!pointcloud.HasPoints()) {
+        PrintShaderWarning("Binding failed with empty pointcloud.");
+        return false;
+    }
+    if (!pointcloud.HasNormals()) {
+        PrintShaderWarning("Binding failed with pointcloud with no normals.");
+        return false;
+    }
+    const ColorMap &global_color_map = *GetGlobalColorMap();
+    points.resize(pointcloud.points_.size());
+    normals.resize(pointcloud.points_.size());
+    colors.resize(pointcloud.points_.size());
+    for (size_t i = 0; i < pointcloud.points_.size(); i++) {
+        const auto &point = pointcloud.points_[i];
+        const auto &normal = pointcloud.normals_[i];
+        points[i] = point.cast<float>();
+        normals[i] = normal.cast<float>();
+        Eigen::Vector3d color;
+        switch (option.point_color_option_) {
+            case RenderOption::PointColorOption::XCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetXPercentage(point(0)));
+                break;
+            case RenderOption::PointColorOption::YCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetYPercentage(point(1)));
+                break;
+            case RenderOption::PointColorOption::ZCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetZPercentage(point(2)));
+                break;
+            case RenderOption::PointColorOption::Color:
+            case RenderOption::PointColorOption::Default:
+            default:
+                if (pointcloud.HasColors()) {
+                    color = pointcloud.colors_[i];
+                } else {
+                    // color = global_color_map.GetColor(
+                    //         view.GetBoundingBox().GetZPercentage(point(2)));
+                    color = Eigen::Vector3d::Zero(3);
+                }
+                break;
+        }
+        colors[i] = color.cast<float>();
+    }
+    draw_arrays_mode_ = GL_POINTS;
+    draw_arrays_size_ = GLsizei(points.size());
+    return true;
+}
+
+
+bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
+        const geometry::Geometry &geometry,
+        const RenderOptionForAnnotation &option,
+        const ViewControl &view,
+        std::vector<Eigen::Vector3f> &points,
+        std::vector<Eigen::Vector3f> &normals,
+        std::vector<Eigen::Vector3f> &colors,
+        const std::vector<std::vector<int>> &labels) {
+    if (geometry.GetGeometryType() !=
+        geometry::Geometry::GeometryType::PointCloud) {
+        PrintShaderWarning("Rendering type is not geometry::PointCloud.");
+        return false;
+    }
+    const geometry::PointCloud &pointcloud =
+            (const geometry::PointCloud &)geometry;
+    if (!pointcloud.HasPoints()) {
+        PrintShaderWarning("Binding failed with empty pointcloud.");
+        return false;
+    }
+    if (!pointcloud.HasNormals()) {
+        PrintShaderWarning("Binding failed with pointcloud with no normals.");
+        return false;
+    }
+    const ColorMap &global_color_map = *GetGlobalColorMap();
+    points.resize(pointcloud.points_.size());
+    normals.resize(pointcloud.points_.size());
+    colors.resize(pointcloud.points_.size());
+    for (size_t i = 0; i < pointcloud.points_.size(); i++) {
+        const auto &point = pointcloud.points_[i];
+        const auto &normal = pointcloud.normals_[i];
+        points[i] = point.cast<float>();
+        normals[i] = normal.cast<float>();
+        Eigen::Vector3d color;
+        switch (option.point_color_option_) {
+            case RenderOptionForAnnotation::PointColorOption::XCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetXPercentage(point(0)));
+                break;
+            case RenderOptionForAnnotation::PointColorOption::YCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetYPercentage(point(1)));
+                break;
+            case RenderOptionForAnnotation::PointColorOption::ZCoordinate:
+                color = global_color_map.GetColor(
+                        view.GetBoundingBox().GetZPercentage(point(2)));
+                break;
+            
+            case RenderOptionForAnnotation::PointColorOption::Label:
+                if (labels.size() != 0)
+                {
+                    int size = (int)labels.size();
+                    for (int k = 0; k < size; k++)
+                    {
+                        if (labels[k][i] == 1)
+                        {
+                            color[k] = primary_color[k];
+                        }
+                        else
+                        {
+                            color[k] = 0;
+                        }
+                    }
+                    if (size < 3)
+                    {
+                        for (int k = 0; k < 3 - size; k++)
+                        {
+                            color[size + k] = 0;
+                        }
+                    }
+                }
+                else
+                {
+                    // color = global_color_map.GetColor(
+                    //         view.GetBoundingBox().GetZPercentage(point(2)));
+                    color = Eigen::Vector3d::Zero(3);
+                }
+                break;
+            case RenderOptionForAnnotation::PointColorOption::Color:
+            case RenderOptionForAnnotation::PointColorOption::Default:
+            default:
+                if (pointcloud.HasColors()) {
+                    color = pointcloud.colors_[i];
+                } else {
+                    // color = global_color_map.GetColor(
+                    //         view.GetBoundingBox().GetZPercentage(point(2)));
+                    color = Eigen::Vector3d::Zero(3);
+                }
+                break;
+        }
+        colors[i] = color.cast<float>();
+    }
+    draw_arrays_mode_ = GL_POINTS;
+    draw_arrays_size_ = GLsizei(points.size());
+    return true;
+}
+
 
 bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
         const geometry::Geometry &geometry,
@@ -153,7 +414,7 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
 
 bool PhongShaderForAnnotationForTriangleMesh::PrepareBinding(
         const geometry::Geometry &geometry,
-        const RenderOption &option,
+        const RenderOptionForAnnotation &option,
         const ViewControl &view,
         std::vector<Eigen::Vector3f> &points,
         std::vector<Eigen::Vector3f> &normals,
@@ -192,25 +453,25 @@ bool PhongShaderForAnnotationForTriangleMesh::PrepareBinding(
 
             Eigen::Vector3d color;
             switch (option.mesh_color_option_) {
-                case RenderOption::MeshColorOption::XCoordinate:
+                case RenderOptionForAnnotation::MeshColorOption::XCoordinate:
                     color = global_color_map.GetColor(
                             view.GetBoundingBox().GetXPercentage(vertex(0)));
                     break;
-                case RenderOption::MeshColorOption::YCoordinate:
+                case RenderOptionForAnnotation::MeshColorOption::YCoordinate:
                     color = global_color_map.GetColor(
                             view.GetBoundingBox().GetYPercentage(vertex(1)));
                     break;
-                case RenderOption::MeshColorOption::ZCoordinate:
+                case RenderOptionForAnnotation::MeshColorOption::ZCoordinate:
                     color = global_color_map.GetColor(
                             view.GetBoundingBox().GetZPercentage(vertex(2)));
                     break;
-                case RenderOption::MeshColorOption::Color:
+                case RenderOptionForAnnotation::MeshColorOption::Color:
                     if (mesh.HasVertexColors()) {
                         color = mesh.vertex_colors_[vi];
                         break;
                     }
                     // fallthrough
-                case RenderOption::MeshColorOption::Default:
+                case RenderOptionForAnnotation::MeshColorOption::Default:
                 default:
                     color = option.default_mesh_color_;
                     break;
@@ -218,7 +479,7 @@ bool PhongShaderForAnnotationForTriangleMesh::PrepareBinding(
             colors[idx] = color.cast<float>();
 
             if (option.mesh_shade_option_ ==
-                RenderOption::MeshShadeOption::FlatShade) {
+                RenderOptionForAnnotation::MeshShadeOption::FlatShade) {
                 normals[idx] = mesh.triangle_normals_[i].cast<float>();
             } else {
                 normals[idx] = mesh.vertex_normals_[vi].cast<float>();

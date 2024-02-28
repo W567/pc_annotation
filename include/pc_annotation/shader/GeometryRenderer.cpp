@@ -27,7 +27,13 @@ bool GeometryRendererForAnnotation::AddLabels(const std::vector<std::vector<int>
     return UpdateGeometry();
 }
 
-bool PointCloudRendererForAnnotation::Render(const RenderOption &option,
+bool PointCloudRendererForAnnotation::AddLabels(const std::vector<std::vector<int>>& labels)
+{
+    label_ptr_ = &labels;
+    return UpdateGeometry();
+}
+
+bool PointCloudRendererForAnnotation::Render(const RenderOptionForAnnotation &option,
                                              const ViewControl &view) {
     if (!is_visible_ || geometry_ptr_->IsEmpty()) return true;
     const auto &pointcloud = (const geometry::PointCloud &)(*geometry_ptr_);
@@ -35,7 +41,7 @@ bool PointCloudRendererForAnnotation::Render(const RenderOption &option,
     bool success = true;
     if (pointcloud.HasNormals()) {
         if (option.point_color_option_ ==
-            RenderOption::PointColorOption::Normal) {
+            RenderOptionForAnnotation::PointColorOption::Normal) {
             success &= normal_point_shader_.Render(pointcloud, option, view);
         } else {
             if (label_ptr_ == nullptr)

@@ -108,7 +108,7 @@ protected:
             pointcloud_picker_renderer_ptr_;
 
     std::shared_ptr<const geometry::Geometry> geometry_ptr_;
-    std::shared_ptr<glsl::GeometryRendererForAnnotation> geometry_renderer_ptr_;
+    std::shared_ptr<glsl::PointCloudRendererForAnnotation> geometry_renderer_ptr_;
 
     RenderOptionForAnnotation pick_point_opts_;
 

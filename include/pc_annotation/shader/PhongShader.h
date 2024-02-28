@@ -13,6 +13,8 @@
 #include "open3d/visualization/shader/ShaderWrapper.h"
 #include "open3d/visualization/shader/PhongShader.h"
 
+#include "pc_annotation/RenderOptionForAnnotation.h"
+
 namespace open3d {
 namespace visualization {
 
@@ -28,12 +30,12 @@ protected:
 protected:
     bool BindGeometry(const geometry::Geometry &geometry,
                       const std::vector<std::vector<int>> &labels,
-                      const RenderOption &option,
+                      const RenderOptionForAnnotation &option,
                       const ViewControl &view);
 
 protected:
     virtual bool PrepareBinding(const geometry::Geometry &geometry,
-                        const RenderOption &option,
+                        const RenderOptionForAnnotation &option,
                         const ViewControl &view,
                         std::vector<Eigen::Vector3f> &points,
                         std::vector<Eigen::Vector3f> &normals,
@@ -50,14 +52,40 @@ public:
     }
 
 protected:
+    bool PrepareRendering(const geometry::Geometry &geometry,
+                          const RenderOption &option,
+                          const ViewControl &view) final;
+    bool PrepareBinding(const geometry::Geometry &geometry,
+                        const RenderOption &option,
+                        const ViewControl &view,
+                        std::vector<Eigen::Vector3f> &points,
+                        std::vector<Eigen::Vector3f> &normals,
+                        std::vector<Eigen::Vector3f> &colors) final;
     bool PrepareBinding(const geometry::Geometry &geometry,
                         const RenderOption &option,
                         const ViewControl &view,
                         std::vector<Eigen::Vector3f> &points,
                         std::vector<Eigen::Vector3f> &normals,
                         std::vector<Eigen::Vector3f> &colors,
-                        const std::vector<std::vector<int>> &labels) final;
+                        const std::vector<std::vector<int>> &labels);
     
+    bool PrepareRendering(const geometry::Geometry &geometry,
+                          const RenderOptionForAnnotation &option,
+                          const ViewControl &view);
+    bool PrepareBinding(const geometry::Geometry &geometry,
+                        const RenderOptionForAnnotation &option,
+                        const ViewControl &view,
+                        std::vector<Eigen::Vector3f> &points,
+                        std::vector<Eigen::Vector3f> &normals,
+                        std::vector<Eigen::Vector3f> &colors);
+    bool PrepareBinding(const geometry::Geometry &geometry,
+                        const RenderOptionForAnnotation &option,
+                        const ViewControl &view,
+                        std::vector<Eigen::Vector3f> &points,
+                        std::vector<Eigen::Vector3f> &normals,
+                        std::vector<Eigen::Vector3f> &colors,
+                        const std::vector<std::vector<int>> &labels);
+
     std::vector<long> primary_color;
 };
 
@@ -67,7 +95,7 @@ public:
 
 protected:
     bool PrepareBinding(const geometry::Geometry &geometry,
-                        const RenderOption &option,
+                        const RenderOptionForAnnotation &option,
                         const ViewControl &view,
                         std::vector<Eigen::Vector3f> &points,
                         std::vector<Eigen::Vector3f> &normals,

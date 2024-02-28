@@ -97,20 +97,10 @@ bool VisualizerWithAnnotation::AddGeometry(
                     std::make_shared<glsl::PointCloudRendererForAnnotation>();
             break;
         case geometry::Geometry::GeometryType::LineSet:
-            geometry_renderer_ptr_ = std::make_shared<glsl::LineSetRenderer>();
-            break;
         case geometry::Geometry::GeometryType::TriangleMesh:  // fall-through
         case geometry::Geometry::GeometryType::HalfEdgeTriangleMesh:
-            geometry_renderer_ptr_ =
-                    std::make_shared<glsl::TriangleMeshRenderer>();
-            break;
         case geometry::Geometry::GeometryType::TetraMesh:
-            geometry_renderer_ptr_ =
-                    std::make_shared<glsl::TetraMeshRenderer>();
-            break;
         case geometry::Geometry::GeometryType::Image:
-            geometry_renderer_ptr_ = std::make_shared<glsl::ImageRenderer>();
-            break;
         case geometry::Geometry::GeometryType::MeshBase:
             // MeshBase is too general, can't render. Fall-through.
         case geometry::Geometry::GeometryType::RGBDImage:
@@ -432,11 +422,11 @@ bool VisualizerWithAnnotation::InitViewControl() {
 }
 
 // TODO: remove this function?
-// bool VisualizerWithAnnotation::InitRenderOption() {
-//     render_option_ptr_ = std::unique_ptr<RenderOptionWithEditing>(
-//             new RenderOptionWithEditing);
-//     return true;
-// }
+bool VisualizerWithAnnotation::InitRenderOption() {
+    render_option_ptr_ = std::unique_ptr<RenderOptionForAnnotation>(
+            new RenderOptionForAnnotation);
+    return true;
+}
 
 void VisualizerWithAnnotation::RegisterSelectionChangedCallback(
         std::function<void()> f) {

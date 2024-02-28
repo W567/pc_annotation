@@ -10,6 +10,7 @@
 #include "open3d/visualization/shader/GeometryRenderer.h"
 
 #include "pc_annotation/shader/PhongShader.h"
+#include "pc_annotation/RenderOptionForAnnotation.h"
 
 namespace open3d {
 namespace visualization {
@@ -31,8 +32,10 @@ class PointCloudRendererForAnnotation : public PointCloudRenderer {
 public:
     ~PointCloudRendererForAnnotation() override {}
 
+    bool AddLabels(const std::vector<std::vector<int>>& labels);
+
 public:
-    bool Render(const RenderOption &option, const ViewControl &view) override;
+    bool Render(const RenderOptionForAnnotation &option, const ViewControl &view);
 
 protected:
     PhongShaderForAnnotationForPointCloud phong_point_shader_;

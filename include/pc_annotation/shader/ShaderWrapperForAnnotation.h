@@ -10,8 +10,9 @@
 #include <GL/glew.h>
 
 #include "open3d/geometry/Geometry.h"
-#include "open3d/visualization/visualizer/RenderOption.h"
 #include "open3d/visualization/visualizer/shader/ShaderWrapper.h"
+
+#include "pc_annotation/RenderOptionForAnnotation.h"
 
 namespace open3d {
 namespace visualization {
@@ -30,13 +31,13 @@ protected:
 public:
     bool Render(const geometry::Geometry &geometry,
                const std::vector<std::vector<int>> &labels,
-               const RenderOption &option,
+               const RenderOptionForAnnotation &option,
                const ViewControl &view);
 
 protected:
     virtual bool BindGeometry(const geometry::Geometry &geometry,
                               const std::vector<std::vector<int>> &labels,
-                              const RenderOption &option,
+                              const RenderOptionForAnnotation &option,
                               const ViewControl &view) = 0;
 
 
