@@ -5,7 +5,7 @@
 // SPDX-License-Identifier: MIT
 // ----------------------------------------------------------------------------
 
-#include "pc_annotation/shader/GeometryRenderer.h"
+#include "pc_annotation/shader/PointCloudRendererForAnnotation.h"
 
 #include "open3d/geometry/PointCloud.h"
 
