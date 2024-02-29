@@ -117,7 +117,7 @@ bool VisualizerWithAnnotation::AddGeometry(
     if (!geometry_renderer_ptr_->AddGeometry(geometry_ptr_)) {
         return false;
     }
-    geometry_renderer_ptr_->AddLabels(labels);
+    geometry_renderer_ptr_->AddLabels(labels_);
     
     geometry_ptrs_.insert(geometry_ptr_);
     geometry_renderer_ptrs_.insert(geometry_renderer_ptr_);
@@ -235,7 +235,7 @@ void VisualizerWithAnnotation::UpdateWindowTitle() {
         auto &view_control = (ViewControlWithEditing &)(*view_control_ptr_);
         // [changed] add tag to window title
         auto title = window_name_ + " - " + view_control.GetStatusString() + 
-                     " - Current Tag: " + std::to_string(tag);
+                     " - Current Tag: " + std::to_string(tag_);
         glfwSetWindowTitle(window_, title.c_str());
     }
 }
@@ -520,16 +520,16 @@ void VisualizerWithAnnotation::KeyPressCallback(
             case GLFW_KEY_SPACE: {
                 if (selected_points_.size() > 0) {
                     auto points = GetGeometryPoints(geometry_ptr_);
-                    length = points->size();
-                    std::vector<int> tmp(length);
+                    length_ = points->size();
+                    std::vector<int> tmp(length_);
                     for (auto &kv : selected_points_) {
                         tmp[kv.first] = 1;
                     }
-                    labels.push_back(tmp);
+                    labels_.push_back(tmp);
                     utility::LogInfo(
                         "Annotate #{:d} points with tag #{:d}. Current tag: #{:d}",
-                        selected_points_.size(), tag, tag+1);
-                    tag++;
+                        selected_points_.size(), tag_, tag_+1);
+                    tag_++;
                 } else {
                     utility::LogInfo("Please select points before annotation.");
                 }
@@ -539,11 +539,11 @@ void VisualizerWithAnnotation::KeyPressCallback(
             case GLFW_KEY_N: {
                 if (mods & GLFW_MOD_CONTROL) {
                     auto points = GetGeometryPoints(geometry_ptr_);
-                    length = points->size();
-                    std::vector<int> tmp(length);
-                    labels.push_back(tmp);
-                    tag++;
-                    utility::LogInfo("Skip. Current tag #{:d}.", tag);
+                    length_ = points->size();
+                    std::vector<int> tmp(length_);
+                    labels_.push_back(tmp);
+                    tag_++;
+                    utility::LogInfo("Skip. Current tag #{:d}.", tag_);
                 } else {
                     Visualizer::KeyPressCallback(window, key, scancode, action,
                                                  mods);
@@ -553,12 +553,12 @@ void VisualizerWithAnnotation::KeyPressCallback(
             
             case GLFW_KEY_B: {
                 if (mods & GLFW_MOD_CONTROL) {
-                    if (tag > 0) {
-                        tag--;
-                        labels.pop_back();
-                        utility::LogInfo("Back. Current tag: #{:d}.", tag);
+                    if (tag_ > 0) {
+                        tag_--;
+                        labels_.pop_back();
+                        utility::LogInfo("Back. Current tag: #{:d}.", tag_);
                     } else {
-                        utility::LogInfo("Empty. Current tag: #{:d}.", tag);
+                        utility::LogInfo("Empty. Current tag: #{:d}.", tag_);
                     }
                 } else {
                     Visualizer::KeyPressCallback(window, key, scancode, action,
@@ -938,7 +938,7 @@ void VisualizerWithAnnotation::SetPointSize(double size) {
 // [changed] Implementation of new methods listed below
 void VisualizerWithAnnotation::SetFilename(std::string name)
 {
-    filename = name;
+    filename_ = name;
 }
 
 bool VisualizerWithAnnotation::ReadTag()
@@ -980,7 +980,7 @@ bool VisualizerWithAnnotation::ReadTag()
 void VisualizerWithAnnotation::SaveTag()
 {
     std::ofstream file;
-    std::string tmp = filename;
+    std::string tmp = filename_;
     
     size_t pos_dot = tmp.find_last_of(".");
     if (pos_dot != std::string::npos) {
@@ -990,10 +990,10 @@ void VisualizerWithAnnotation::SaveTag()
     std::string ext = ".label";
     file.open(tmp + ext);
 
-    int size = labels.size();
-    for (int i = 0; i < length; i++) {
+    int size = labels_.size();
+    for (int i = 0; i < length_; i++) {
         for (int j = 0; j < size; j++) {
-            file << std::to_string(labels[j][i]);
+            file << std::to_string(labels_[j][i]);
             if (j < size - 1) {
                 file << " ";
             } else {

@@ -124,10 +124,10 @@ protected:
     std::function<void()> on_selection_moved_;
 
 protected: // [changed] new attributes listed below
-    int tag = 0;
-    int length;
-    std::string filename;
-    std::vector<std::vector<int>> labels;
+    int tag_ = 0;
+    int length_;
+    std::string filename_;
+    std::vector<std::vector<int>> labels_;
 };
 
 }  // namespace visualization
