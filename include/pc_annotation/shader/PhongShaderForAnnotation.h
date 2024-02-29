@@ -99,6 +99,11 @@ public:
         primary_color.push_back(Eigen::Vector3d(255.0, 0.0, 0.0));
         primary_color.push_back(Eigen::Vector3d(0.0, 255.0, 0.0));
         primary_color.push_back(Eigen::Vector3d(0.0, 0.0, 255.0));
+        // TODO Hard to dintinguish original colors and intermediate colors
+        primary_color.push_back(Eigen::Vector3d(255.0, 255.0, 0.0));
+        primary_color.push_back(Eigen::Vector3d(255.0, 0.0, 255.0));
+        primary_color.push_back(Eigen::Vector3d(0.0, 255.0, 255.0));
+        primary_color.push_back(Eigen::Vector3d(255.0, 255.0, 255.0));
     }
 
 protected:

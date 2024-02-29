@@ -458,6 +458,10 @@ bool PhongShaderForAnnotationForPointCloud::PrepareBinding(
             }
             case RenderOptionForAnnotation::PointColorOption::Label: {
                 int label_size = (int)labels.size();
+                if (label_size > primary_color.size()) {
+                    PrintShaderWarning("Too many labels.");
+                    return false;
+                }
                 if (label_size != 0) {
                     for (int k = 0; k < label_size; k++) {
                         if (labels[k][i] == 1) {
