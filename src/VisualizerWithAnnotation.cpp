@@ -943,38 +943,44 @@ void VisualizerWithAnnotation::SetFilename(std::string name)
 
 bool VisualizerWithAnnotation::ReadTag()
 {
-    // std::fstream file;
-    // std::string tmp = filename;
-    // tmp.pop_back();
-    // tmp.pop_back();
-    // tmp.pop_back();
-    // std::string ext = "label";
-    // if (std::experimental::filesystem::exists(tmp + ext)) {
-    //     file.open(tmp + ext);
-    //     std::string line;
-    //     labels.clear();
-    //     std::vector<int> aff1;
-    //     std::vector<int> aff2;
-    //     std::vector<int> aff3;
-    //     while (std::getline(file, line))
-    //     {
-    //         aff1.push_back(atoi(&line.at(0)));
-    //         aff2.push_back(atoi(&line.at(2)));
-    //         aff3.push_back(atoi(&line.at(4)));
-    //         utility::LogInfo(line.c_str());
-    //         utility::LogInfo("tag1, 2, 3: #{:d} #{:d} #{:d}.", atoi(&line.at(0)),
-    //                                                            atoi(&line.at(2)),
-    //                                                            atoi(&line.at(4)));
-    //     }
-    //     labels.push_back(aff1);
-    //     labels.push_back(aff2);
-    //     labels.push_back(aff3);
-    //     return true;
-    // }
-    // else {
-    //     return false;
-    // }
-    return false;
+    std::fstream file;
+    std::string tmp = filename_;
+
+    size_t pos_dot = tmp.find_last_of(".");
+    if (pos_dot != std::string::npos) {
+        tmp = tmp.substr(0, pos_dot);
+    }
+
+    std::string ext = ".label";
+    if (std::experimental::filesystem::exists(tmp + ext)) {
+        file.open(tmp + ext);
+        std::string line;
+        labels_.clear();
+
+        std::getline(file, line);
+        int tag_num = (line.length() + 1) / 2;
+        tag_ += tag_num;
+        file.clear();
+        file.seekg(0, std::ios::beg);
+
+        std::vector<std::vector<int>> tmp_labels;
+        for (int i = 0; i < tag_num; i++) {
+            std::vector<int> tmp;
+            tmp_labels.push_back(tmp);
+        }
+        while (std::getline(file, line)) {
+            for (int i = 0; i < tag_num; i++) {
+                tmp_labels[i].push_back(atoi(&line.at(2 * i)));
+            }
+        }
+        labels_ = tmp_labels;
+        file.close();
+        utility::LogInfo("Read tag from {}.", tmp + ext);
+        return true;
+    } else {
+        utility::LogInfo("No label file found.");
+        return false;
+    }
 }
 
 void VisualizerWithAnnotation::SaveTag()
@@ -988,9 +994,11 @@ void VisualizerWithAnnotation::SaveTag()
     }
 
     std::string ext = ".label";
-    file.open(tmp + ext);
+    file.open(tmp + ext, std::ios::trunc);
 
     int size = labels_.size();
+    auto points = GetGeometryPoints(geometry_ptr_);
+    length_ = points->size();
     for (int i = 0; i < length_; i++) {
         for (int j = 0; j < size; j++) {
             file << std::to_string(labels_[j][i]);
@@ -1003,7 +1011,7 @@ void VisualizerWithAnnotation::SaveTag()
     }
 
     file.close();
-    utility::LogInfo("Tag saved.");
+    utility::LogInfo("Save tag to {}.", tmp + ext);
 }
 
 }  // namespace visualization
