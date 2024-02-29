@@ -584,7 +584,7 @@ void VisualizerWithAnnotation::KeyPressCallback(
 
             case GLFW_KEY_ESCAPE:
             case GLFW_KEY_Q: {
-                SaveTag();
+                // SaveTag();
                 Close();
                 break;
             }
