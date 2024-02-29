@@ -223,13 +223,13 @@ void VisualizerWithAnnotation::PrintVisualizerHelp() {
     utility::LogInfo("                                  selection.");
     utility::LogInfo("------------------ Keys for annotation ------------------");
     utility::LogInfo("    Space        :        Annotate with current tag.");
-    utility::LogInfo("    Ctrl + N     :        Skip to next tag.");
-    utility::LogInfo("    Ctrl + B     :        Back to previous tag.");
-    utility::LogInfo("    Ctrl + S     :        Save labels.");
-    utility::LogInfo("    Ctrl + F     :        Toggle coordinate visualization.");
+    utility::LogInfo("    N            :        Skip to next tag.");
+    utility::LogInfo("    B            :        Back to previous tag.");
+    utility::LogInfo("    S            :        Save labels.");
+    utility::LogInfo("    C            :        Toggle coordinate visualization.");
     utility::LogInfo("    5            :        Point color set to LABEL.");
     utility::LogInfo("    R            :        Read tag.");
-    utility::LogInfo("    Q / Esc      :        Quit (auto labels saving).");
+    utility::LogInfo("    Q / Esc      :        Quit.");
     utility::LogInfo("");
     // clang-format on
 }
@@ -537,48 +537,37 @@ void VisualizerWithAnnotation::KeyPressCallback(
             }
 
             case GLFW_KEY_N: {
-                if (mods & GLFW_MOD_CONTROL) {
-                    std::vector<int> tmp(points_num_);
-                    labels_.push_back(tmp);
-                    tag_++;
-                    utility::LogInfo("Skip. Current tag #{:d}.", tag_);
-                } else {
-                    Visualizer::KeyPressCallback(window, key, scancode, action,
-                                                 mods);
-                }
+                std::vector<int> tmp(points_num_);
+                labels_.push_back(tmp);
+                tag_++;
+                utility::LogInfo("Skip. Current tag #{:d}.", tag_);
                 break;
             }
             
             case GLFW_KEY_B: {
-                if (mods & GLFW_MOD_CONTROL) {
-                    if (tag_ > 0) {
-                        tag_--;
-                        labels_.pop_back();
-                        utility::LogInfo("Back. Current tag: #{:d}.", tag_);
-                    } else {
-                        utility::LogInfo("Empty. Current tag: #{:d}.", tag_);
-                    }
+                if (tag_ > 0) {
+                    tag_--;
+                    labels_.pop_back();
+                    utility::LogInfo("Back. Current tag: #{:d}.", tag_);
                 } else {
-                    Visualizer::KeyPressCallback(window, key, scancode, action,
-                                                 mods);
+                    utility::LogInfo("Empty. Current tag: #{:d}.", tag_);
                 }
                 break;
             }
 
             case GLFW_KEY_S: {
-                utility::LogInfo("Press S, mods: #{:d}", mods);
                 SaveTag();
                 break;
             }
 
+            case GLFW_KEY_C: {
+                render_option_ptr_->show_coordinate_frame_ = !render_option_ptr_->show_coordinate_frame_;
+            }
+
             case GLFW_KEY_F: {
-                if (mods & GLFW_MOD_CONTROL) {
-                  render_option_ptr_->show_coordinate_frame_ = !render_option_ptr_->show_coordinate_frame_;
-                } else {
-                    view_control.SetEditingMode(
-                            ViewControlWithEditing::EditingMode::FreeMode);
-                    utility::LogDebug("[Visualizer] Enter freeview mode.");
-                }
+                view_control.SetEditingMode(
+                        ViewControlWithEditing::EditingMode::FreeMode);
+                utility::LogDebug("[Visualizer] Enter freeview mode.");
                 break;
             }
 
