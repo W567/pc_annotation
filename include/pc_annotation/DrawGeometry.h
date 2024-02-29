@@ -17,7 +17,7 @@ namespace open3d {
 namespace visualization {
 
 bool DrawGeometriesWithAnnotation(
-        const std::vector<std::shared_ptr<const geometry::PointCloud>> &geometry_ptrs,
+        const std::shared_ptr<const geometry::PointCloud> &geometry_ptr,
         const std::string &filename,
         const std::string &window_name = "Open3D",
         int width = 640,

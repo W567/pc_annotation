@@ -225,6 +225,7 @@ void VisualizerWithAnnotation::PrintVisualizerHelp() {
     utility::LogInfo("    Ctrl + S     :        Save labels.");
     utility::LogInfo("    Ctrl + F     :        Toggle coordinate visualization.");
     utility::LogInfo("    5            :        Point color set to LABEL.");
+    utility::LogInfo("    R            :        Read tag.");
     utility::LogInfo("    Q / Esc      :        Quit (auto labels saving).");
     utility::LogInfo("");
     // clang-format on
@@ -490,8 +491,6 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 } else {
                     // [changed] Read tag
                     ReadTag();
-                    // Visualizer::KeyPressCallback(window, key, scancode, action,
-                    //                              mods);
                 }
                 break;
             }

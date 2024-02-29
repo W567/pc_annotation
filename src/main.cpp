@@ -59,11 +59,9 @@ bool annotate(
     cpp_pointcloud.normals_ = MatrixToVector3d(normals);
     cpp_pointcloud.colors_ = MatrixToVector3d(colors);
 
-    std::vector<std::shared_ptr<const open3d::geometry::PointCloud>> geometry_ptrs;
-    geometry_ptrs.push_back(std::make_shared<const open3d::geometry::PointCloud>(cpp_pointcloud));
-
     open3d::visualization::DrawGeometriesWithAnnotation(
-        geometry_ptrs, filename, window_name, width, height, left, top);
+        std::make_shared<const open3d::geometry::PointCloud>(cpp_pointcloud),
+        filename, window_name, width, height, left, top);
     return true;
 }
 
