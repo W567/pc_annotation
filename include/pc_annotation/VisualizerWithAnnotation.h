@@ -125,7 +125,7 @@ protected:
 
 protected: // [changed] new attributes listed below
     int tag_ = 0;
-    int length_;
+    int points_num_;
     std::string filename_;
     std::vector<std::vector<int>> labels_;
 };

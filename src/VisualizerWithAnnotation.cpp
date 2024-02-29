@@ -94,10 +94,13 @@ bool VisualizerWithAnnotation::AddGeometry(
     // Add the geometry/renderer
     geometry_ptr_ = geometry_in_ptr;
     switch (geometry_ptr_->GetGeometryType()) {
-        case geometry::Geometry::GeometryType::PointCloud:
+        case geometry::Geometry::GeometryType::PointCloud: {
+            auto points = GetGeometryPoints(geometry_ptr_);
+            points_num_ = points->size();
             geometry_renderer_ptr_ =
                     std::make_shared<glsl::PointCloudRendererForAnnotation>();
             break;
+        }
         // [changed] currently only PointCloud is supported
         case geometry::Geometry::GeometryType::LineSet:
         case geometry::Geometry::GeometryType::TriangleMesh:
@@ -518,9 +521,7 @@ void VisualizerWithAnnotation::KeyPressCallback(
             // [changed] new keys for annotation listed below
             case GLFW_KEY_SPACE: {
                 if (selected_points_.size() > 0) {
-                    auto points = GetGeometryPoints(geometry_ptr_);
-                    length_ = points->size();
-                    std::vector<int> tmp(length_);
+                    std::vector<int> tmp(points_num_);
                     for (auto &kv : selected_points_) {
                         tmp[kv.first] = 1;
                     }
@@ -537,9 +538,7 @@ void VisualizerWithAnnotation::KeyPressCallback(
 
             case GLFW_KEY_N: {
                 if (mods & GLFW_MOD_CONTROL) {
-                    auto points = GetGeometryPoints(geometry_ptr_);
-                    length_ = points->size();
-                    std::vector<int> tmp(length_);
+                    std::vector<int> tmp(points_num_);
                     labels_.push_back(tmp);
                     tag_++;
                     utility::LogInfo("Skip. Current tag #{:d}.", tag_);
@@ -996,9 +995,7 @@ void VisualizerWithAnnotation::SaveTag()
     file.open(tmp + ext, std::ios::trunc);
 
     int size = labels_.size();
-    auto points = GetGeometryPoints(geometry_ptr_);
-    length_ = points->size();
-    for (int i = 0; i < length_; i++) {
+    for (int i = 0; i < points_num_; i++) {
         for (int j = 0; j < size; j++) {
             file << std::to_string(labels_[j][i]);
             if (j < size - 1) {
