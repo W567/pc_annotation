@@ -18,7 +18,7 @@ cd build
 cmake ..
 make -j
 sudo make install
-sudo make install-pip-package # To install pip package
+make install-pip-package # To install pip package
 ```
 
 
