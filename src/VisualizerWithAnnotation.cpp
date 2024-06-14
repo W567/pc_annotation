@@ -1,9 +1,9 @@
-// ----------------------------------------------------------------------------
+// --------------------
 // -                        Open3D: www.open3d.org                            -
-// ----------------------------------------------------------------------------
+// --------------------
 // Copyright (c) 2018-2023 www.open3d.org
 // SPDX-License-Identifier: MIT
-// ----------------------------------------------------------------------------
+// --------------------
 
 #include "pc_annotation/VisualizerWithAnnotation.h"
 
@@ -205,15 +205,41 @@ bool VisualizerWithAnnotation::UpdateGeometry(
 }
 
 void VisualizerWithAnnotation::PrintVisualizerHelp() {
-    Visualizer::PrintVisualizerHelp();
+    // Visualizer::PrintVisualizerHelp();
     // clang-format off
-    utility::LogInfo("  -- Editing control --");
+    utility::LogInfo("---------------- View control ----------------");
+    utility::LogInfo("    Left button + drag         : Rotate.");
+    utility::LogInfo("    Ctrl + left button + drag  : Translate.");
+    utility::LogInfo("    Wheel button + drag        : Translate.");
+    utility::LogInfo("    Wheel                      : Zoom in/out.");
     utility::LogInfo("    F            : Enter free view.");
     utility::LogInfo("    X            : Enter orthogonal view along X axis, press again to flip.");
     utility::LogInfo("    Y            : Enter orthogonal view along Y axis, press again to flip.");
     utility::LogInfo("    Z            : Enter orthogonal view along Z axis, press again to flip.");
-    utility::LogInfo("    Ctrl + R     : Clear selection.");
-    utility::LogInfo("    Shift + +/-  : Increase/decrease picked point size.");
+    utility::LogInfo("    C            : Toggle coordinate visualization.");
+    utility::LogInfo("");
+    utility::LogInfo("---------------- General control ----------------");
+    utility::LogInfo("    Q / Esc      : Exit window.");
+    utility::LogInfo("    H            : Print help message.");
+    utility::LogInfo("    Alt + Enter  : Toggle between full screen and windowed mode.");
+    utility::LogInfo("");
+    utility::LogInfo("---------------- Render mode control ----------------");
+    utility::LogInfo("    =/-          : Increase/decrease point size.");
+    utility::LogInfo("    Shift + =/-  : Increase/decrease picked point size.");
+    utility::LogInfo("    Ctrl + N     : Turn on/off point cloud normal rendering.");
+    utility::LogInfo("");
+    utility::LogInfo("---------------- Color control ----------------");
+    utility::LogInfo("    0..5,9       : Set point cloud color option.");
+    utility::LogInfo("                   0 - Default behavior, render point color.");
+    utility::LogInfo("                   1 - Render point color.");
+    utility::LogInfo("                   2 - x coordinate as color.");
+    utility::LogInfo("                   3 - y coordinate as color.");
+    utility::LogInfo("                   4 - z coordinate as color.");
+    utility::LogInfo("                   5 - label as color.");
+    utility::LogInfo("                   9 - normal as color.");
+    utility::LogInfo("");
+    utility::LogInfo("---------------- Editing control ----------------");
+    utility::LogInfo("    Ctrl + R                    : Clear selection.");
     utility::LogInfo("    Shift + mouse left button   : Pick a point and add to selection. If it is");
     utility::LogInfo("                                  already in the selection it will be removed.");
     utility::LogInfo("    Shift + mouse left drag     : Defines a rectangle, which will add all the ");
@@ -221,15 +247,13 @@ void VisualizerWithAnnotation::PrintVisualizerHelp() {
     utility::LogInfo("    mouse right drag            : Moves selected points.");
     utility::LogInfo("    Delete / Backspace          : Removes all points in the rectangle from the");
     utility::LogInfo("                                  selection.");
-    utility::LogInfo("------------------ Keys for annotation ------------------");
+    utility::LogInfo("");
+    utility::LogInfo("---------------- Annotation control ----------------");
     utility::LogInfo("    Space        :        Annotate with current tag.");
     utility::LogInfo("    N            :        Skip to next tag.");
     utility::LogInfo("    B            :        Back to previous tag.");
-    utility::LogInfo("    S            :        Save labels.");
-    utility::LogInfo("    C            :        Toggle coordinate visualization.");
-    utility::LogInfo("    5            :        Point color set to LABEL.");
-    utility::LogInfo("    R            :        Read tag.");
-    utility::LogInfo("    Q / Esc      :        Quit.");
+    utility::LogInfo("    S            :        Save tags.");
+    utility::LogInfo("    R            :        Read tags.");
     utility::LogInfo("");
     // clang-format on
 }
@@ -468,6 +492,12 @@ void VisualizerWithAnnotation::KeyPressCallback(
 
     if (action != GLFW_RELEASE) {
         switch (key) {
+            case GLFW_KEY_F: {
+                view_control.SetEditingMode(
+                        ViewControlWithEditing::EditingMode::FreeMode);
+                utility::LogDebug("[Visualizer] Enter freeview mode.");
+                break;
+            }
             case GLFW_KEY_X: {
                 view_control.ToggleEditingX();
                 utility::LogDebug(
@@ -486,6 +516,156 @@ void VisualizerWithAnnotation::KeyPressCallback(
                         "[Visualizer] Enter orthogonal Z editing mode.");
                 break;
             }
+            case GLFW_KEY_C: {
+                render_option_ptr_->show_coordinate_frame_ = !render_option_ptr_->show_coordinate_frame_;
+                break;
+            }
+
+            case GLFW_KEY_ESCAPE:
+            case GLFW_KEY_Q: {
+                // SaveTag();
+                Close();
+                break;
+            }
+            case GLFW_KEY_H: {
+                PrintVisualizerHelp();
+                break;
+            }
+            case GLFW_KEY_ENTER:
+                if (mods & GLFW_MOD_ALT) {
+                    if (IsFullScreen()) {
+                        SetFullScreen(false);
+                    } else {
+                        SetFullScreen(true);
+                    };
+                }
+                break;
+
+            case GLFW_KEY_EQUAL:
+                if (mods & GLFW_MOD_SHIFT) {
+                    SetPointSize(pick_point_opts_.point_size_ + 1.0);
+                    is_redraw_required_ = true;
+                } else {
+                    render_option_ptr_->ChangePointSize(1.0);
+                    if (render_option_ptr_->point_show_normal_) {
+                        UpdateGeometry();
+                    }
+                    utility::LogDebug("[Visualizer] Point size set to {:.2f}.",
+                                    render_option_ptr_->point_size_);
+                }
+                break;
+            case GLFW_KEY_MINUS:
+                if (mods & GLFW_MOD_SHIFT) {
+                    SetPointSize(pick_point_opts_.point_size_ - 1.0);
+                    is_redraw_required_ = true;
+                } else {
+                    render_option_ptr_->ChangePointSize(-1.0);
+                    if (render_option_ptr_->point_show_normal_) {
+                        UpdateGeometry();
+                    }
+                    utility::LogDebug("[Visualizer] Point size set to {:.2f}.",
+                                    render_option_ptr_->point_size_);
+                }
+                break;
+
+            case GLFW_KEY_0: {
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Default;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to DEFAULT.");
+                break;
+            }
+            case GLFW_KEY_1: {
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Color;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to COLOR.");
+                break;
+            }
+            case GLFW_KEY_2: {
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::XCoordinate;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to X.");
+                break;
+            }
+            case GLFW_KEY_3: {
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::YCoordinate;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to Y.");
+                break;
+            }
+            case GLFW_KEY_4: {
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::ZCoordinate;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to Z.");
+                break;
+            }
+            case GLFW_KEY_5: {
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Label;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to LABEL");
+                break;
+            }
+            case GLFW_KEY_9: {
+                render_option_ptr_->point_color_option_ =
+                        RenderOptionForAnnotation::PointColorOption::Normal;
+                UpdateGeometry();
+                utility::LogDebug("[VisualizerForAnnotation] Point color set to NORMAL.");
+                break;
+            }
+
+            case GLFW_KEY_SPACE: {
+                if (selected_points_.size() > 0) {
+                    std::vector<int> tmp(points_num_);
+                    for (auto &kv : selected_points_) {
+                        tmp[kv.first] = 1;
+                    }
+                    labels_.push_back(tmp);
+                    utility::LogInfo(
+                        "[VisualizerForAnnotation] Annotate #{:d} points with tag #{:d}. Current tag: #{:d}",
+                        selected_points_.size(), tag_, tag_+1);
+                    tag_++;
+                } else {
+                    utility::LogInfo("[VisualizerForAnnotation] Please select points before annotation.");
+                }
+                break;
+            }
+            case GLFW_KEY_N: {
+                if (mods & GLFW_MOD_CONTROL) {
+                    render_option_ptr_->TogglePointShowNormal();
+                    if (render_option_ptr_->point_show_normal_) {
+                        UpdateGeometry();
+                    }
+                    utility::LogDebug(
+                            "[Visualizer] Point normal rendering {}.",
+                            render_option_ptr_->point_show_normal_ ? "ON" : "OFF");
+                    break;
+                } else {
+                    std::vector<int> tmp(points_num_);
+                    labels_.push_back(tmp);
+                    tag_++;
+                    utility::LogInfo("[VisualizerForAnnotation] Skip. Current tag #{:d}.", tag_);
+                    break;
+                }
+            }
+            case GLFW_KEY_B: {
+                if (tag_ > 0) {
+                    tag_--;
+                    labels_.pop_back();
+                    utility::LogInfo("[VisualizerForAnnotation] Back. Current tag: #{:d}.", tag_);
+                } else {
+                    utility::LogInfo("[VisualizerForAnnotation] Empty. Current tag: #{:d}.", tag_);
+                }
+                break;
+            }
+            case GLFW_KEY_S: {
+                SaveTag();
+                break;
+            }
             case GLFW_KEY_R: {
                 if (mods & GLFW_MOD_CONTROL) {
                     ClearPickedPoints();
@@ -497,136 +677,10 @@ void VisualizerWithAnnotation::KeyPressCallback(
                 }
                 break;
             }
-            case GLFW_KEY_MINUS: {
-                SetPointSize(pick_point_opts_.point_size_ - 1.0);
-                is_redraw_required_ = true;
-                break;
-            }
-            case GLFW_KEY_EQUAL: {
-                SetPointSize(pick_point_opts_.point_size_ + 1.0);
-                is_redraw_required_ = true;
-                break;
-            }
-
-            // [changed] new keys for annotation listed below
-            case GLFW_KEY_SPACE: {
-                if (selected_points_.size() > 0) {
-                    std::vector<int> tmp(points_num_);
-                    for (auto &kv : selected_points_) {
-                        tmp[kv.first] = 1;
-                    }
-                    labels_.push_back(tmp);
-                    utility::LogInfo(
-                        "Annotate #{:d} points with tag #{:d}. Current tag: #{:d}",
-                        selected_points_.size(), tag_, tag_+1);
-                    tag_++;
-                } else {
-                    utility::LogInfo("Please select points before annotation.");
-                }
-                break;
-            }
-
-            case GLFW_KEY_N: {
-                std::vector<int> tmp(points_num_);
-                labels_.push_back(tmp);
-                tag_++;
-                utility::LogInfo("Skip. Current tag #{:d}.", tag_);
-                break;
-            }
-            
-            case GLFW_KEY_B: {
-                if (tag_ > 0) {
-                    tag_--;
-                    labels_.pop_back();
-                    utility::LogInfo("Back. Current tag: #{:d}.", tag_);
-                } else {
-                    utility::LogInfo("Empty. Current tag: #{:d}.", tag_);
-                }
-                break;
-            }
-
-            case GLFW_KEY_S: {
-                SaveTag();
-                break;
-            }
-
-            case GLFW_KEY_C: {
-                render_option_ptr_->show_coordinate_frame_ = !render_option_ptr_->show_coordinate_frame_;
-            }
-
-            case GLFW_KEY_F: {
-                view_control.SetEditingMode(
-                        ViewControlWithEditing::EditingMode::FreeMode);
-                utility::LogDebug("[Visualizer] Enter freeview mode.");
-                break;
-            }
-
-            case GLFW_KEY_ESCAPE:
-            case GLFW_KEY_Q: {
-                // SaveTag();
-                Close();
-                break;
-            }
-
-            case GLFW_KEY_0: {
-                render_option_ptr_->point_color_option_ =
-                        RenderOptionForAnnotation::PointColorOption::Default;
-                UpdateGeometry();
-                utility::LogDebug("[VisualizerForAnnotation] Point color set to DEFAULT.");
-                break;
-            }
-
-            case GLFW_KEY_1: {
-                render_option_ptr_->point_color_option_ =
-                        RenderOptionForAnnotation::PointColorOption::Color;
-                UpdateGeometry();
-                utility::LogDebug("[VisualizerForAnnotation] Point color set to COLOR.");
-                break;
-            }
-
-            case GLFW_KEY_2: {
-                render_option_ptr_->point_color_option_ =
-                        RenderOptionForAnnotation::PointColorOption::XCoordinate;
-                UpdateGeometry();
-                utility::LogDebug("[VisualizerForAnnotation] Point color set to X.");
-                break;
-            }
-
-            case GLFW_KEY_3: {
-                render_option_ptr_->point_color_option_ =
-                        RenderOptionForAnnotation::PointColorOption::YCoordinate;
-                UpdateGeometry();
-                utility::LogDebug("[VisualizerForAnnotation] Point color set to Y.");
-                break;
-            }
-
-            case GLFW_KEY_4: {
-                render_option_ptr_->point_color_option_ =
-                        RenderOptionForAnnotation::PointColorOption::ZCoordinate;
-                UpdateGeometry();
-                utility::LogDebug("[VisualizerForAnnotation] Point color set to Z.");
-                break;
-            }
-
-            case GLFW_KEY_5: {
-                render_option_ptr_->point_color_option_ =
-                        RenderOptionForAnnotation::PointColorOption::Label;
-                UpdateGeometry();
-                utility::LogDebug("[VisualizerForAnnotation] Point color set to LABEL");
-                break;
-            }
-
-            case GLFW_KEY_9: {
-                render_option_ptr_->point_color_option_ =
-                        RenderOptionForAnnotation::PointColorOption::Normal;
-                UpdateGeometry();
-                utility::LogDebug("[VisualizerForAnnotation] Point color set to NORMAL.");
-                break;
-            }
 
             default:
-                Visualizer::KeyPressCallback(window, key, scancode, action,
-                                             mods);
+                // Visualizer::KeyPressCallback(window, key, scancode, action,
+                //                              mods);
                 break;
         }
     }
