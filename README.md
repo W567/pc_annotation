@@ -1,8 +1,8 @@
-# Point Cloud Annotation Toolkit (Open3d-based)
+# Point Cloud Annotation Toolkit (Open3D-based)
 
 ## Dependency
 
-### Open3d
+### Open3D
 
 Build Open3D from source based on https://www.open3d.org/docs/release/compilation.html.
 ```
