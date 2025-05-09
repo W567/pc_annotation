@@ -1,1 +1,4 @@
 build/
+.idea/
+**/*_aff*.pcd
+**/*.label
